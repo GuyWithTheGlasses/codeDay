@@ -6,14 +6,14 @@ void setup() {
   for (int i = 0; i < keys.length; i++) {
     keys[i] = false;
   }
-  size(1920, 1080);
+  size(1280, 720);
   background(255);
 }
 
 void draw() {
   noStroke();
   fill(255);
-  //background(255,255,255);
+  background(255);
   frameRate(30);
   player.drawShape();
   if (keys[0]) {
@@ -31,7 +31,7 @@ void draw() {
   borderCheck(player);
 }
 
-void keyPressed() {
+void keyPressed() {    
   if (key == 'w' ||  key == 'W') {
     keys[0]=true;
   }
