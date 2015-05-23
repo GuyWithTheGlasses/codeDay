@@ -31,6 +31,11 @@ abstract class Shape {
   void addY(int inc) {
     y = y + inc;
   }
+  
+  void setXY(int xcor, int ycor){
+    x = xcor;
+    y = ycor;
+  }
   /*
   Shape getPrev(){
     return prev;
