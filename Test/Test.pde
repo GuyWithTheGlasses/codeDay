@@ -7,13 +7,13 @@ void setup() {
     keys[i] = false;
   }
   size(1280, 720);
-  background(255);
+  background(255, 255, 0);
 }
 
 void draw() {
   noStroke();
   fill(255);
-  background(255);
+  //background(255, 255, 0);
   frameRate(30);
   player.drawShape();
   if (keys[0]) {
