@@ -1,6 +1,7 @@
 abstract class Shape {
   int x, y;
   int col1, col2, col3;
+  //Shape prev;
 
   Shape(int xcor, int ycor, int c1, int c2, int c3) {
     x = xcor;
@@ -30,6 +31,14 @@ abstract class Shape {
   void addY(int inc) {
     y = y + inc;
   }
+  /*
+  Shape getPrev(){
+    return prev;
+  }
+  void setPrev(Shape p){
+    prev = p;
+  }
+  */
 
   abstract void drawShape();
 }

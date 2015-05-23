@@ -1,5 +1,8 @@
+int rad = 10;
+boolean[][] squares = new boolean[height / (2*rad)][width / (2*rad)];
 boolean[] keys = new boolean[4];
-Circle player = new Circle(10, 10, 10, 0, 0, 0);
+Circle player = new Circle(rad, rad, rad, 0, 0, 0);
+Rect piggyback = new Rect(-2*rad, 0, 2*rad, 2*rad, 0, 0, 255);
 int step = 2*player.getR();
 
 void setup() {
@@ -11,24 +14,34 @@ void setup() {
 }
 
 void draw() {
-  noStroke();
+  //noStroke();
   fill(255);
   //background(255, 255, 0);
   frameRate(30);
-  player.drawShape();
+  piggyback.setX(player.getX());
+  piggyback.setY(player.getY());
   if (keys[0]) {
     player.addY(-1*step);
   }
-  if (keys[1]) {
+  else if (keys[1]) {
     player.addX(-1*step);
   }
-  if (keys[2]) {
+  else if (keys[2]) {
     player.addY(step);
   }
-  if (keys[3]) {
+  else if (keys[3]) {
     player.addX(step);
   }
+  player.drawShape();
   borderCheck(player);
+  piggyback.drawShape();
+}
+
+void updateSquares() {
+}
+
+void fillShape(Shape sh) {
+  sh.drawShape();
 }
 
 void keyPressed() {    
