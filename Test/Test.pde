@@ -22,19 +22,26 @@ void draw() {
   piggyback.setY(player.getY());
   if (keys[0]) {
     player.addY(-1*step);
+    player.drawShape();
+    piggyback.drawShape();
   }
   else if (keys[1]) {
     player.addX(-1*step);
+    player.drawShape();
+    piggyback.drawShape();
   }
   else if (keys[2]) {
     player.addY(step);
+    player.drawShape();
+    piggyback.drawShape();
   }
   else if (keys[3]) {
     player.addX(step);
+    player.drawShape();
+    piggyback.drawShape();
   }
-  player.drawShape();
   borderCheck(player);
-  piggyback.drawShape();
+  
 }
 
 void updateSquares() {
