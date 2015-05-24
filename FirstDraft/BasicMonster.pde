@@ -1,23 +1,58 @@
-class BasicMonster extends Monster{
- int x,y;
- PImage i;
- 
- BasicMonster(int x,int y, PImage i){
-    super (x,y,i); 
- }
- 
- void getX(){
-    super.getX(); 
- }
- 
- void getY(){
-    super.getY(); 
- }
- 
- void drawImage(){
-    image(i,x,y); 
- }
- 
- void move();
-   
+class BasicMonster{
+  int x, y, w, h;
+  PImage i;
+  
+  BasicMonster(int xcor, int ycor, PImage img){
+    x = xcor;
+    y = ycor;
+    i = img;
+    w = i.width;
+    h = i.height;
+  }
+  
+  int getX() {
+    return x;
+  }
+  void setX(int xcor) {
+    x = xcor;
+  }
+
+  int getY() {
+    return y;
+  }
+  void setY(int ycor) {
+    y = ycor;
+  }
+  
+  void addX(int inc) {
+    x = x + inc;
+  }
+  void addY(int inc) {
+    y = y + inc;
+  }
+  
+  int getW() {
+    return w;
+  }
+  void setW(int wid) {
+    w = wid;
+  }
+  
+  int getH() {
+    return h;
+  }
+  void setH(int hei) {
+    y = hei;
+  }
+
+  
+  void setImage(String s){
+    i = loadImage(s);
+    w = i.width;
+    h = i.height;
+  }
+  void drawImage(){
+    image(i, x, y);
+  }
+  
 }
