@@ -47,7 +47,7 @@ void draw() {
   //noStroke();
   fill(255);
   frameRate(30);
-  updateSquares();
+  Image tmp = updateSquares();
   if (keys[0]) {
     player.addY(-1*step);
   } else if (keys[1]) {
@@ -58,27 +58,34 @@ void draw() {
     player.addX(step);
   }
   borderCheck(player);
+  if(squares[tmp.getX()][tmp.getY()] == 2 && 
+     squares[player.getX() / 20][player.getY() / 20] == 1){
+       sumAndFill();
+     }
   player.drawImage();
   System.out.println(squares[player.getY()/20][player.getX()/20]);
 }
 
-void updateSquares() {
-  int sqcolor = squares[player.getY() / 20][player.getX() / 20];
+Image updateSquares() {
+  int px = player.getX();
+  int py = player.getY();
+  int sqcolor = squares[px/20][py/20];
   if (sqcolor == 1) {
-    blueDrawer.setXY(player.getX(), player.getY());
+    blueDrawer.setXY(px, py);
     blueDrawer.drawShape();
   } else if (sqcolor == 0) {
-    greenDrawer.setXY(player.getX(), player.getY());
+    greenDrawer.setXY(px, py);
     greenDrawer.drawShape();
-    squares[greenDrawer.getY()/20][greenDrawer.getX()/20]=2;
-    path.add(greenDrawer);
+    squares[px/20][py/20]=2;
+    //path.add(greenDrawer);
   }
+  return new Image(px/20, py/20);
 }
 
-void sumSides() {
+void sumAndFill() {
   int sum1 = 0;
   int sum2 = 0;
-  int x1, y1, x2, y2;
+  int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
   boolean side1 = false; //side1==true when we're adding to sum1
   for (int i = 1; i < squares.length; i++) {
     for (int j = 1; j < squares[i].length; j++) {
@@ -102,16 +109,45 @@ void sumSides() {
     }
   }
   if (sum1 < sum2) {
-    //floodFill(x1, y1);
+    floodFill(x1, y1);
   } else {
-    //floodFill(x2, y2);
+    floodFill(x2, y2);
   }
 }
- 
-void floodFill(int x, int y){
-  
+
+void floodFill(int x, int y) {
+  Frontier f = new Frontier();
+  f.add(new Image(x, y));
+
+  int tx = 0, ty = 0;
+  Image current = null;
+
+  while (!f.isEmpty ()) {
+    current = f.remove();
+    int cx = current.getX();
+    int cy = current.getY();
+
+    if (squares[cx][cy]==1) {
+      f.remove();
+    } else {
+      squares[cx][cy] = 1;
+    }
+
+    if (squares[cx+1][cy] == 0) {
+      f.add(new Image(cx+1, cy));
+    }
+    if (squares[cx-1][cy] == 0) {
+      f.add(new Image(cx-1, cy));
+    }
+    if (squares[cx][cy+1] == 0) {
+      f.add(new Image(cx, cy+1));
+    }
+    if (squares[cx][cy-1] == 0) {
+      f.add(new Image(cx, cy-1));
+    }
+  }
 }
- 
+
 void fillSquare() {
   int sqcolor = squares[player.getY() / 20][player.getX() / 20];
   if (sqcolor == 1) {

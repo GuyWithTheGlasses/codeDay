@@ -10,6 +10,12 @@ class Image{
     h = i.height;
   }
   
+  //This is so the Image can double as a storage class for (x,y) data 
+  Image(int xcor, int ycor){
+    x = xcor;
+    y = ycor;
+  }
+  
   int getX() {
     return x;
   }
