@@ -58,7 +58,7 @@ void draw() {
     player.addX(step);
   }
   borderCheck(player);
-  if(squares[tmp.getX()][tmp.getY()] == 2 && 
+  if(squares[tmp.getY()][tmp.getX()] == 2 && 
      squares[player.getX() / 20][player.getY() / 20] == 1){
        sumAndFill();
      }
@@ -66,22 +66,31 @@ void draw() {
   System.out.println(squares[player.getY()/20][player.getX()/20]);
 }
 
+/*------------------------ Methods used in draw() ------------------------------*/
+
+//updateSquares() redraws the blue and green squares of the path each time the player
+//moves a square. It returns an Image (because we were too lazy to make another class
+//to hold an x and y coordinate) so draw() can check if the player just stepped
+//from a blue square to a green square. If so, then we need to sumAndFill().
 Image updateSquares() {
   int px = player.getX();
   int py = player.getY();
-  int sqcolor = squares[px/20][py/20];
+  int sqcolor = squares[py/20][px/20];
   if (sqcolor == 1) {
     blueDrawer.setXY(px, py);
     blueDrawer.drawShape();
   } else if (sqcolor == 0) {
     greenDrawer.setXY(px, py);
     greenDrawer.drawShape();
-    squares[px/20][py/20]=2;
+    squares[py/20][px/20]=2;
     //path.add(greenDrawer);
   }
   return new Image(px/20, py/20);
 }
 
+//sumAndFill() sums the number of squares on both sides of the green path drawm by Pac-Xon. 
+//Then, depending on which side is smaller, it uses floodFill() to fill the side with less squares
+//with blue squares. Along the way, it turns the green path into blue squares as well. 
 void sumAndFill() {
   int sum1 = 0;
   int sum2 = 0;
@@ -115,6 +124,9 @@ void sumAndFill() {
   }
 }
 
+//floodFill(x,y) fills an area of the grid with blue squares. It starts from any 
+//point whose value is currently 0 and turns all the squares connected to it blue. 
+//This is done using a breadth-first search method. 
 void floodFill(int x, int y) {
   Frontier f = new Frontier();
   f.add(new Image(x, y));
@@ -127,27 +139,32 @@ void floodFill(int x, int y) {
     int cx = current.getX();
     int cy = current.getY();
 
-    if (squares[cx][cy]==1) {
+    if (squares[cy][cx]==1) {
       f.remove();
     } else {
-      squares[cx][cy] = 1;
+      squares[cy][cx] = 1;
+      blueDrawer.setXY(cx*20, cy*20);
+      blueDrawer.drawShape();
     }
 
-    if (squares[cx+1][cy] == 0) {
-      f.add(new Image(cx+1, cy));
+    if (cy < squares.length - 1 && squares[cy+1][cx] == 0) {
+      f.add(new Image(cy+1, cx));
     }
-    if (squares[cx-1][cy] == 0) {
-      f.add(new Image(cx-1, cy));
+    if (cy > 0 && squares[cy-1][cx] == 0) {
+      f.add(new Image(cy-1, cx));
     }
-    if (squares[cx][cy+1] == 0) {
-      f.add(new Image(cx, cy+1));
+    if (cx < squares[cy].length - 1 && squares[cy][cx+1] == 0) {
+      f.add(new Image(cy, cx+1));
     }
-    if (squares[cx][cy-1] == 0) {
-      f.add(new Image(cx, cy-1));
+    if (cx > 0 && squares[cy][cx-1] == 0) {
+      f.add(new Image(cy, cx-1));
     }
   }
 }
 
+/*--------------------------- idk wat this is ----------------------------------*/
+
+/*
 void fillSquare() {
   int sqcolor = squares[player.getY() / 20][player.getX() / 20];
   if (sqcolor == 1) {
@@ -158,6 +175,9 @@ void fillSquare() {
     }
   }
 }
+*/
+
+/*------------------ keyPressed/Released and borderCheck ----------------------*/
 
 void keyPressed() {    
   if (key == 'w' ||  key == 'W') {

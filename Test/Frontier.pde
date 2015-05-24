@@ -8,7 +8,11 @@ class Frontier {
   }
 
   Image remove() {
-    return l.remove(0);
+    if (isEmpty()) {
+      return null;
+    } else {
+      return l.remove(0);
+    }
   }
 
   boolean isEmpty() {
