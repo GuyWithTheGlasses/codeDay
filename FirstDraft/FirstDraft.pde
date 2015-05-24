@@ -2,10 +2,11 @@ PImage bg;
 int rad=10;
 boolean [][] squares= new boolean [height/ (2*rad)][width/ (2*rad)];
 BasicMonster bitch;
+
 void setup(){
   size(1280 ,720);
-  bg= loadImage("crew.jpg");
-  bitch=new BasicMonster(500,500,loadImage("orange_ghost.png"));
+  bg = loadImage("crew.jpg");
+  bitch = new BasicMonster(500,500,loadImage("orange_ghost.png"));
 }
 
 void draw(){

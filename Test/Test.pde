@@ -6,6 +6,7 @@ int sidelen = 20; //length of one unit
 int[][] squares; //array of units, each unit is sidelen*sidelen pixels
 boolean[] keys = new boolean[4]; //keys being pressed
 int step = sidelen; //distance player moves every time a key is pressed
+int dir; //direction of player's movement, 0 = UP, 1 = LEFT, 2 = DOWN, 3 = RIGHT
 
 //These two "Drawers" are here to draw the blue/green paths 
 //There are probably easier ways to do this but it works so 
@@ -42,14 +43,18 @@ void setup() {
 
   player = new Image(0, 0, loadImage("clyde.jpg"));
   player.drawImage();
-
+  dir = 0;
+  /*
   for (int i = 0; i < squares.length; i++) {
-    for (int j = 0; j < squares[i].length; j++) {
-      System.out.print(squares[i][j] + " ");
-    }
-    System.out.println();
-  }
+   for (int j = 0; j < squares[i].length; j++) {
+   System.out.print(squares[i][j] + " ");
+   }
+   System.out.println();
+   }
+   System.out.println("End" + "\n");
+   */
 }
+
 
 void draw() {
   frameRate(30);
@@ -57,20 +62,37 @@ void draw() {
   //Set the square the player was just at to blue/green accordingly
 
   //Update location of player
+  boolean wasGreen = (squares[tmp.getX()][tmp.getY()] == 2); 
+  //System.out.println(wasGreen);
   if (keys[0]) {
-    player.addY(-1*step);
+    if (checkMove(0) || !wasGreen) {
+      player.addY(-1*step);
+      dir = 0;
+      System.out.println(checkMove(0));
+    }
   } else if (keys[1]) {
-    player.addX(-1*step);
+    if (checkMove(1) || !wasGreen) {
+      player.addX(-1*step);
+      dir = 1;
+      System.out.println(checkMove(1));
+    }
   } else if (keys[2]) {
-    player.addY(step);
+    if (checkMove(2) || !wasGreen) {
+      player.addY(step);
+      dir = 2;
+      System.out.println(checkMove(2));
+    }
   } else if (keys[3]) {
-    player.addX(step);
+    if (checkMove(3) || !wasGreen) {
+      player.addX(step);
+      dir = 3;
+      System.out.println(checkMove(3));
+    }
   }
   borderCheck(player); //Move player back inside frame if necessary
 
   //tmp is holding the previous location of player
-  if (squares[tmp.getX()][tmp.getY()] == 2 && 
-    squares[player.getX() / sidelen][player.getY() / sidelen] == 1) {
+  if (wasGreen && squares[player.getX() / sidelen][player.getY() / sidelen] == 1) {
     fill(0, 0, 205);
     sumAndFill(); //If we just went from path back to safe squares, fill in the appropriate area
   }
@@ -100,6 +122,24 @@ Image updateSquares() {
   return new Image(px / sidelen, py / sidelen);
 }
 
+//returns true if move is valid, returns false if our player would make an illegal moveddd
+//whether it be running into its own path or an enemy, in which case we have to implement death
+//int d = direction of movement, 0 = UP, 1 = LEFT, 2 = DOWN, 3 = RIGHT
+//Currently this only stops the player from moving backwards
+boolean checkMove(int d) {
+  if (d == 0  && dir == 2){
+    return false;
+  } else if (d == 1 && dir == 3){
+    return false;
+  } else if (d == 2 && dir == 0){
+    return false;
+  } else if (d == 3 && dir == 1){
+    return false;
+  } else {
+    return true;
+  }
+}
+
 //sumAndFill() sums the number of squares on both sides of the green path drawm by Pac-Xon. 
 //Then, depending on which side is smaller, it uses floodFill() to fill the side with less squares
 //with blue squares. Along the way, it turns the green path into blue squares as well. 
@@ -107,7 +147,7 @@ void sumAndFill() {
   int sum1 = 0;
   int sum2 = 0;
   int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
-  boolean side1 = false; //side1==true when we're adding to sum1
+  boolean side1 = true; //side1==true when we're adding to sum1
   for (int j = 1; j < squares[0].length - 1; j++) {
     for (int i = 1; i < squares.length - 1; i++) {
       if (squares[i][j] == 0) {
@@ -130,24 +170,21 @@ void sumAndFill() {
       }
       /*
       System.out.println("Start");
-      for (int m = 0; m < squares[0].length; m++) {
-        for (int n = 0; n < squares.length; n++) {
-          System.out.print(squares[n][m] + " ");
-        }
-        System.out.println();
-      }
-      System.out.println("End" + "\n");
-      */
+       for (int m = 0; m < squares[0].length; m++) {
+       for (int n = 0; n < squares.length; n++) {
+       System.out.print(squares[n][m] + " ");
+       }
+       System.out.println();
+       }
+       System.out.println("End" + "\n");
+       */
     }
   }
-  /*
   if (sum1 < sum2) {
     floodFill(x1, y1);
   } else {
     floodFill(x2, y2);
   }
-  */
-  floodFill(62,34);
 }
 
 //floodFill(x,y) fills an area of the grid with blue squares. It starts from any 
@@ -186,14 +223,14 @@ void floodFill(int x, int y) {
     }
     /*
     System.out.println("Start");
-    for (int j = 0; j < squares[0].length; j++) {
-      for (int i = 0; i < squares.length; i++) {
-        System.out.print(squares[i][j] + " ");
-      }
-      System.out.println();
-    }
-    System.out.println("End" + "\n");
-    */
+     for (int j = 0; j < squares[0].length; j++) {
+     for (int i = 0; i < squares.length; i++) {
+     System.out.print(squares[i][j] + " ");
+     }
+     System.out.println();
+     }
+     System.out.println("End" + "\n");
+     */
   }
 }
 
