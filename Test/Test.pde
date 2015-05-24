@@ -28,7 +28,7 @@ void setup() {
   //srawing across
   for (int across = 0; across < width; across = across+sidelen) {
     rect(across, 0, sidelen, sidelen);
-    rect (across, height - sidelen, sidelen, sidelen);
+    rect(across, height - sidelen, sidelen, sidelen);
     squares[across / sidelen][0] = 1;
     squares[across / sidelen][(height - sidelen) / sidelen] = 1;
   }
@@ -42,10 +42,16 @@ void setup() {
 
   player = new Image(0, 0, loadImage("clyde.jpg"));
   player.drawImage();
+
+  for (int i = 0; i < squares.length; i++) {
+    for (int j = 0; j < squares[i].length; j++) {
+      System.out.print(squares[i][j] + " ");
+    }
+    System.out.println();
+  }
 }
 
 void draw() {
-  fill(255);
   frameRate(30);
   Image tmp = updateSquares(); 
   //Set the square the player was just at to blue/green accordingly
@@ -65,6 +71,7 @@ void draw() {
   //tmp is holding the previous location of player
   if (squares[tmp.getX()][tmp.getY()] == 2 && 
     squares[player.getX() / sidelen][player.getY() / sidelen] == 1) {
+    fill(0, 0, 205);
     sumAndFill(); //If we just went from path back to safe squares, fill in the appropriate area
   }
   player.drawImage();
@@ -101,53 +108,53 @@ void sumAndFill() {
   int sum2 = 0;
   int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
   boolean side1 = false; //side1==true when we're adding to sum1
-  for (int i = 1; i < squares.length - 1; i++) {
-    for (int j = 1; j < squares[i].length - 1; j++) {
+  for (int j = 1; j < squares[0].length - 1; j++) {
+    for (int i = 1; i < squares.length - 1; i++) {
       if (squares[i][j] == 0) {
         if (side1) {
           sum1++;
           x1 = i;
-          System.out.println("Side 1");
           y1 = j;
         } else {
           sum2++;
           x2 = i;
           y2 = j;
-          System.out.println("Side 2");
         }
       } else if (squares[i][j] == 2) {
         while (squares[i][j] == 2) {
           squares[i][j] = 1;
-          blueDrawer.setXY(i*sidelen, j*sidelen);
-          blueDrawer.drawShape();
+          rect(i*sidelen, j*sidelen, sidelen, sidelen);
           i++;
-          System.out.println("Green");
         }
         side1 = !side1;
       }
+      /*
+      System.out.println("Start");
+      for (int m = 0; m < squares[0].length; m++) {
+        for (int n = 0; n < squares.length; n++) {
+          System.out.print(squares[n][m] + " ");
+        }
+        System.out.println();
+      }
+      System.out.println("End" + "\n");
+      */
     }
   }
+  /*
   if (sum1 < sum2) {
     floodFill(x1, y1);
   } else {
     floodFill(x2, y2);
   }
-}
-
-void sumAndFill2() {
-  int sum1 = 0, sum2 = 0;
-  int x1 = 0, y1 = 0, x2 = 0, y2 = 0;  
-  for (int i = 0; i < path.size (); i++) {
-    Shape sh = path.get(i);
-    int sx = sh.getX();
-    int sy = sh.getY();
-  }
+  */
+  floodFill(62,34);
 }
 
 //floodFill(x,y) fills an area of the grid with blue squares. It starts from any 
 //point whose value is currently 0 and turns all the squares connected to it blue. 
 //This is done using a breadth-first search method. 
 void floodFill(int x, int y) {
+  fill(0, 0, 205);
   Frontier f = new Frontier();
   f.add(new Image(x, y));
 
@@ -158,15 +165,13 @@ void floodFill(int x, int y) {
     current = f.remove();
     int cx = current.getX();
     int cy = current.getY();
-    System.out.println(cx + ", " + cy);
+    //System.out.println(cx + ", " + cy);
     if (squares[cx][cy] == 1) {
       f.remove();
     } else {
-    squares[cx][cy] = 1;
-    blueDrawer.setXY(cx*sidelen, cy*sidelen);
-    blueDrawer.drawShape();
+      squares[cx][cy] = 1;
+      rect(cx*sidelen, cy*sidelen, sidelen, sidelen);
     }
-
     if (cx < squares.length - 1 && squares[cx+1][cy] == 0) {
       f.add(new Image(cx+1, cy));
     }
@@ -179,6 +184,16 @@ void floodFill(int x, int y) {
     if (cy > 0 && squares[cx][cy-1] == 0) {
       f.add(new Image(cx, cy-1));
     }
+    /*
+    System.out.println("Start");
+    for (int j = 0; j < squares[0].length; j++) {
+      for (int i = 0; i < squares.length; i++) {
+        System.out.print(squares[i][j] + " ");
+      }
+      System.out.println();
+    }
+    System.out.println("End" + "\n");
+    */
   }
 }
 
