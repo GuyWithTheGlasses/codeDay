@@ -11,32 +11,33 @@ int step = sidelen; //distance player moves every time a key is pressed
 //There are probably easier ways to do this but it works so 
 Rect blueDrawer = new Rect(-1*sidelen, 0, sidelen, sidelen, 0, 0, 205); 
 Rect greenDrawer = new Rect(-1*sidelen, 0, sidelen, sidelen, 0, 255, 0);
-//ArrayList<Shape> path = new ArrayList<Shape>();
+ArrayList<Shape> path = new ArrayList<Shape>();
 
 void setup() {
   //Set all keys as not pressed
-  for (int i = 0 ; i < keys.length ; i++) {
+  for (int i = 0; i < keys.length; i++) {
     keys[i] = false;
   }
   size(1280, 720);
   bg = loadImage("crew.jpg"); 
   background (bg);
 
-  squares= new int[width / sidelen][height / sidelen]; //0 = empty place; 1 = safe place; 2 = temp path 
+  squares = new int[width / sidelen][height / sidelen]; //0 = empty place; 1 = safe place; 2 = temp path 
   fill (0, 0, 205);
   //Drawing the border, which will always be there
   //srawing across
   for (int across = 0; across < width; across = across+sidelen) {
     rect(across, 0, sidelen, sidelen);
     rect (across, height - sidelen, sidelen, sidelen);
-    squares[across / sidelen][(height - sidelen) / sidelen] = 1; 
+    squares[across / sidelen][0] = 1;
+    squares[across / sidelen][(height - sidelen) / sidelen] = 1;
   }
   //drawing vertical
-  for (int vert = 0 ; vert < height ; vert = vert+sidelen) {
+  for (int vert = 0; vert < height; vert = vert+sidelen) {
     rect (0, vert, sidelen, sidelen);
     rect (width - sidelen, vert, sidelen, sidelen);
-    squares[vert / sidelen][0] = 1;
-    squares[vert / sidelen][(height - sidelen) / sidelen] = 1;
+    squares[0][vert / sidelen] = 1;
+    squares[(width - sidelen) / sidelen][vert / sidelen] = 1;
   }
 
   player = new Image(0, 0, loadImage("clyde.jpg"));
@@ -48,7 +49,7 @@ void draw() {
   frameRate(30);
   Image tmp = updateSquares(); 
   //Set the square the player was just at to blue/green accordingly
-  
+
   //Update location of player
   if (keys[0]) {
     player.addY(-1*step);
@@ -60,14 +61,14 @@ void draw() {
     player.addX(step);
   }
   borderCheck(player); //Move player back inside frame if necessary
-  
+
   //tmp is holding the previous location of player
-  if(squares[tmp.getX()][tmp.getY()] == 2 && 
-     squares[player.getX() / sidelen][player.getY() / sidelen] == 1){
-       sumAndFill(); //If we just went from path back to safe squares, fill in the appropriate area
-     }
+  if (squares[tmp.getX()][tmp.getY()] == 2 && 
+    squares[player.getX() / sidelen][player.getY() / sidelen] == 1) {
+    sumAndFill(); //If we just went from path back to safe squares, fill in the appropriate area
+  }
   player.drawImage();
-  //System.out.println(squares[player.getX() / sidelen][player.getY() / sidelen]); //testing purposes
+  //System.out.println(player.getX() / sidelen + ", " + player.getY() / sidelen); //testing purposes
 }
 
 /*------------------------ Methods used in draw() ------------------------------*/
@@ -87,7 +88,7 @@ Image updateSquares() {
     greenDrawer.setXY(px, py);
     greenDrawer.drawShape();
     squares[px / sidelen][py / sidelen] = 2;
-    //path.add(greenDrawer);
+    path.add(greenDrawer);
   }
   return new Image(px / sidelen, py / sidelen);
 }
@@ -100,24 +101,29 @@ void sumAndFill() {
   int sum2 = 0;
   int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
   boolean side1 = false; //side1==true when we're adding to sum1
-  for (int i = 1; i < squares.length; i++) {
-    for (int j = 1; j < squares[i].length; j++) {
+  for (int i = 1; i < squares.length - 1; i++) {
+    for (int j = 1; j < squares[i].length - 1; j++) {
       if (squares[i][j] == 0) {
         if (side1) {
           sum1++;
           x1 = i;
+          System.out.println("Side 1");
           y1 = j;
         } else {
           sum2++;
           x2 = i;
           y2 = j;
+          System.out.println("Side 2");
         }
-      }
-      if (squares[i][j] == 2) {
+      } else if (squares[i][j] == 2) {
+        while (squares[i][j] == 2) {
+          squares[i][j] = 1;
+          blueDrawer.setXY(i*sidelen, j*sidelen);
+          blueDrawer.drawShape();
+          i++;
+          System.out.println("Green");
+        }
         side1 = !side1;
-        squares[i][j] = 1;
-        blueDrawer.setXY(i*sidelen, j*sidelen);
-        blueDrawer.drawShape();
       }
     }
   }
@@ -125,6 +131,16 @@ void sumAndFill() {
     floodFill(x1, y1);
   } else {
     floodFill(x2, y2);
+  }
+}
+
+void sumAndFill2() {
+  int sum1 = 0, sum2 = 0;
+  int x1 = 0, y1 = 0, x2 = 0, y2 = 0;  
+  for (int i = 0; i < path.size (); i++) {
+    Shape sh = path.get(i);
+    int sx = sh.getX();
+    int sy = sh.getY();
   }
 }
 
@@ -142,13 +158,13 @@ void floodFill(int x, int y) {
     current = f.remove();
     int cx = current.getX();
     int cy = current.getY();
-
-    if (squares[cx][cy]==1) {
+    System.out.println(cx + ", " + cy);
+    if (squares[cx][cy] == 1) {
       f.remove();
     } else {
-      squares[cx][cy] = 1;
-      blueDrawer.setXY(cx*sidelen, cy*sidelen);
-      blueDrawer.drawShape();
+    squares[cx][cy] = 1;
+    blueDrawer.setXY(cx*sidelen, cy*sidelen);
+    blueDrawer.drawShape();
     }
 
     if (cx < squares.length - 1 && squares[cx+1][cy] == 0) {
