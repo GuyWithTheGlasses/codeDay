@@ -1,4 +1,4 @@
-import java.util.Arraylist;
+import java.util.*;
 
 PImage bg;
 Image player;
@@ -75,13 +75,51 @@ void updateSquares() {
   }
 }
 
-void fillSquare(){
+void sumSides() {
+  int sum1 = 0;
+  int sum2 = 0;
+  int x1, y1, x2, y2;
+  boolean side1 = false; //side1==true when we're adding to sum1
+  for (int i = 1; i < squares.length; i++) {
+    for (int j = 1; j < squares[i].length; j++) {
+      if (squares[i][j] == 0) {
+        if (side1) {
+          sum1++;
+          x1 = i;
+          y1 = j;
+        } else {
+          sum2++;
+          x2 = i;
+          y2 = j;
+        }
+      }
+      if (squares[i][j] == 2) {
+        side1 = !side1;
+        squares[i][j] = 1;
+        blueDrawer.setXY(j*20, i*20);
+        blueDrawer.drawShape();
+      }
+    }
+  }
+  if (sum1 < sum2) {
+    //floodFill(x1, y1);
+  } else {
+    //floodFill(x2, y2);
+  }
+}
+ 
+void floodFill(int x, int y){
+  
+}
+ 
+void fillSquare() {
   int sqcolor = squares[player.getY() / 20][player.getX() / 20];
-  if (sqcolor == 1){
-    for(int i = 0 ; i < path.size() ; i++){
+  if (sqcolor == 1) {
+    for (int i = 0; i < path.size (); i++) {
       Shape sh = path.get(i);
       blueDrawer.setXY(sh.getX(), sh.getY());
       blueDrawer.drawShape();
+    }
   }
 }
 
