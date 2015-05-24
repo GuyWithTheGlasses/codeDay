@@ -1,4 +1,4 @@
-PImage bg;
+PImage bg,ghost;
 int rad=10;
 boolean [][] squares= new boolean [height/ (2*rad)][width/ (2*rad)];
 
