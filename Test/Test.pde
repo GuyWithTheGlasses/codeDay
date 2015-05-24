@@ -1,36 +1,37 @@
 import java.util.*;
 
-PImage bg;
-Image player;
-int sidelen = 20;
-int[][] squares; 
-boolean[] keys = new boolean[4];
-int step = sidelen;
-//Circle player = new Circle(rad, rad, rad, 0, 0, 0);
-Rect blueDrawer = new Rect(-1*sidelen, 0, sidelen, sidelen, 0, 0, 255);
+PImage bg; //background image
+Image player; //player image
+int sidelen = 20; //length of one unit
+int[][] squares; //array of units, each unit is sidelen*sidelen pixels
+boolean[] keys = new boolean[4]; //keys being pressed
+int step = sidelen; //distance player moves every time a key is pressed
+
+//These two "Drawers" are here to draw the blue/green paths 
+//There are probably easier ways to do this but it works so 
+Rect blueDrawer = new Rect(-1*sidelen, 0, sidelen, sidelen, 0, 0, 205); 
 Rect greenDrawer = new Rect(-1*sidelen, 0, sidelen, sidelen, 0, 255, 0);
-ArrayList<Shape> path = new ArrayList<Shape>();
+//ArrayList<Shape> path = new ArrayList<Shape>();
 
 void setup() {
+  //Set all keys as not pressed
   for (int i = 0 ; i < keys.length ; i++) {
     keys[i] = false;
   }
   size(1280, 720);
-  bg = loadImage("crew.jpg");
+  bg = loadImage("crew.jpg"); 
   background (bg);
 
-  squares= new int[width / sidelen][height / sidelen]; //0= empty place; 1=safe place; 2 = temp path 
-
+  squares= new int[width / sidelen][height / sidelen]; //0 = empty place; 1 = safe place; 2 = temp path 
   fill (0, 0, 205);
   //Drawing the border, which will always be there
-  //fixed thing across
+  //srawing across
   for (int across = 0; across < width; across = across+sidelen) {
     rect(across, 0, sidelen, sidelen);
     rect (across, height - sidelen, sidelen, sidelen);
     squares[across / sidelen][(height - sidelen) / sidelen] = 1; 
   }
-
-  //filled vertical
+  //drawing vertical
   for (int vert = 0 ; vert < height ; vert = vert+sidelen) {
     rect (0, vert, sidelen, sidelen);
     rect (width - sidelen, vert, sidelen, sidelen);
@@ -45,7 +46,10 @@ void setup() {
 void draw() {
   fill(255);
   frameRate(30);
-  Image tmp = updateSquares();
+  Image tmp = updateSquares(); 
+  //Set the square the player was just at to blue/green accordingly
+  
+  //Update location of player
   if (keys[0]) {
     player.addY(-1*step);
   } else if (keys[1]) {
@@ -55,13 +59,15 @@ void draw() {
   } else if (keys[3]) {
     player.addX(step);
   }
-  borderCheck(player);
+  borderCheck(player); //Move player back inside frame if necessary
+  
+  //tmp is holding the previous location of player
   if(squares[tmp.getX()][tmp.getY()] == 2 && 
      squares[player.getX() / sidelen][player.getY() / sidelen] == 1){
-       sumAndFill();
+       sumAndFill(); //If we just went from path back to safe squares, fill in the appropriate area
      }
   player.drawImage();
-  System.out.println(squares[player.getX() / sidelen][player.getY() / sidelen]);
+  //System.out.println(squares[player.getX() / sidelen][player.getY() / sidelen]); //testing purposes
 }
 
 /*------------------------ Methods used in draw() ------------------------------*/
@@ -160,21 +166,6 @@ void floodFill(int x, int y) {
   }
 }
 
-/*--------------------------- idk wat this is ----------------------------------*/
-
-/*
-void fillSquare() {
-  int sqcolor = squares[player.getY() / 20][player.getX() / 20];
-  if (sqcolor == 1) {
-    for (int i = 0; i < path.size (); i++) {
-      Shape sh = path.get(i);
-      blueDrawer.setXY(sh.getX(), sh.getY());
-      blueDrawer.drawShape();
-    }
-  }
-}
-*/
-
 /*------------------ keyPressed/Released and borderCheck ----------------------*/
 
 void keyPressed() {    
@@ -206,6 +197,9 @@ void keyReleased() {
   }
 }
 
+
+//borderCheck(i) checks if the Image i is outside of the screen
+//If so, it moves it back to the screen's border
 boolean borderCheck(Image i) {
   boolean out=false;
   if (i.getX()< 0) {
