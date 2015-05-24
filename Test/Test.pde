@@ -12,31 +12,30 @@ Rect greenDrawer = new Rect(-1*sidelen, 0, sidelen, sidelen, 0, 255, 0);
 ArrayList<Shape> path = new ArrayList<Shape>();
 
 void setup() {
-  for (int i = 0; i < keys.length; i++) {
+  for (int i = 0 ; i < keys.length ; i++) {
     keys[i] = false;
   }
   size(1280, 720);
   bg = loadImage("crew.jpg");
   background (bg);
 
-  squares= new int[height / sidelen][width / sidelen]; //0= empty place; 1=safe place; 2 = temp path 
+  squares= new int[width / sidelen][height / sidelen]; //0= empty place; 1=safe place; 2 = temp path 
 
   fill (0, 0, 205);
   //Drawing the border, which will always be there
   //fixed thing across
-  for (int across=0; across<width; across=across+20) {
-    rect(across, 0, 20, 20);
-    rect (across, height-20, 20, 20);
-    squares[0][across/20]=1;
-    squares[(height-20)/20][across/20]=1;
+  for (int across = 0; across < width; across = across+sidelen) {
+    rect(across, 0, sidelen, sidelen);
+    rect (across, height - sidelen, sidelen, sidelen);
+    squares[across / sidelen][(height - sidelen) / sidelen] = 1; 
   }
 
   //filled vertical
-  for (int vert =0; vert <height; vert =vert+20) {
-    rect (0, vert, 20, 20);
-    rect (width -20, vert, 20, 20);
-    squares[vert/20][0]=1;
-    squares[vert/20][(width-20)/20]=1;
+  for (int vert = 0 ; vert < height ; vert = vert+sidelen) {
+    rect (0, vert, sidelen, sidelen);
+    rect (width - sidelen, vert, sidelen, sidelen);
+    squares[vert / sidelen][0] = 1;
+    squares[vert / sidelen][(height - sidelen) / sidelen] = 1;
   }
 
   player = new Image(0, 0, loadImage("clyde.jpg"));
@@ -44,7 +43,6 @@ void setup() {
 }
 
 void draw() {
-  //noStroke();
   fill(255);
   frameRate(30);
   Image tmp = updateSquares();
@@ -58,12 +56,12 @@ void draw() {
     player.addX(step);
   }
   borderCheck(player);
-  if(squares[tmp.getY()][tmp.getX()] == 2 && 
-     squares[player.getX() / 20][player.getY() / 20] == 1){
+  if(squares[tmp.getX()][tmp.getY()] == 2 && 
+     squares[player.getX() / sidelen][player.getY() / sidelen] == 1){
        sumAndFill();
      }
   player.drawImage();
-  System.out.println(squares[player.getY()/20][player.getX()/20]);
+  System.out.println(squares[player.getX() / sidelen][player.getY() / sidelen]);
 }
 
 /*------------------------ Methods used in draw() ------------------------------*/
@@ -75,17 +73,17 @@ void draw() {
 Image updateSquares() {
   int px = player.getX();
   int py = player.getY();
-  int sqcolor = squares[py/20][px/20];
+  int sqcolor = squares[px / sidelen][py / sidelen];
   if (sqcolor == 1) {
     blueDrawer.setXY(px, py);
     blueDrawer.drawShape();
   } else if (sqcolor == 0) {
     greenDrawer.setXY(px, py);
     greenDrawer.drawShape();
-    squares[py/20][px/20]=2;
+    squares[px / sidelen][py / sidelen] = 2;
     //path.add(greenDrawer);
   }
-  return new Image(px/20, py/20);
+  return new Image(px / sidelen, py / sidelen);
 }
 
 //sumAndFill() sums the number of squares on both sides of the green path drawm by Pac-Xon. 
@@ -112,7 +110,7 @@ void sumAndFill() {
       if (squares[i][j] == 2) {
         side1 = !side1;
         squares[i][j] = 1;
-        blueDrawer.setXY(j*20, i*20);
+        blueDrawer.setXY(i*sidelen, j*sidelen);
         blueDrawer.drawShape();
       }
     }
@@ -139,25 +137,25 @@ void floodFill(int x, int y) {
     int cx = current.getX();
     int cy = current.getY();
 
-    if (squares[cy][cx]==1) {
+    if (squares[cx][cy]==1) {
       f.remove();
     } else {
-      squares[cy][cx] = 1;
-      blueDrawer.setXY(cx*20, cy*20);
+      squares[cx][cy] = 1;
+      blueDrawer.setXY(cx*sidelen, cy*sidelen);
       blueDrawer.drawShape();
     }
 
-    if (cy < squares.length - 1 && squares[cy+1][cx] == 0) {
-      f.add(new Image(cy+1, cx));
+    if (cx < squares.length - 1 && squares[cx+1][cy] == 0) {
+      f.add(new Image(cx+1, cy));
     }
-    if (cy > 0 && squares[cy-1][cx] == 0) {
-      f.add(new Image(cy-1, cx));
+    if (cx > 0 && squares[cx-1][cy] == 0) {
+      f.add(new Image(cx-1, cy));
     }
-    if (cx < squares[cy].length - 1 && squares[cy][cx+1] == 0) {
-      f.add(new Image(cy, cx+1));
+    if (cy < squares[cx].length - 1 && squares[cx][cy+1] == 0) {
+      f.add(new Image(cx, cy+1));
     }
-    if (cx > 0 && squares[cy][cx-1] == 0) {
-      f.add(new Image(cy, cx-1));
+    if (cy > 0 && squares[cx][cy-1] == 0) {
+      f.add(new Image(cx, cy-1));
     }
   }
 }
