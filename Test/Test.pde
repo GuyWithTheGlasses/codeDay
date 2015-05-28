@@ -127,17 +127,22 @@ Image updateSquares() {
 //int d = direction of movement, 0 = UP, 1 = LEFT, 2 = DOWN, 3 = RIGHT
 //Currently this only stops the player from moving backwards
 boolean checkMove(int d) {
-  if (d == 0  && dir == 2){
-    return false;
-  } else if (d == 1 && dir == 3){
-    return false;
-  } else if (d == 2 && dir == 0){
-    return false;
-  } else if (d == 3 && dir == 1){
-    return false;
-  } else {
+  int px = player.getX() / sidelen;
+  int py = player.getY() / sidelen;
+  if (px <= 0 || px >= width || py <= 0 || py >- height)
     return true;
+
+  boolean nextGreen = false;
+  if (d == 0) {
+    nextGreen = squares[px][py-1] == 2;
+  } else if (d == 1) {
+    nextGreen = squares[px-1][py] == 2;
+  } else if (d == 2) {
+    nextGreen = squares[px][py+1] == 2;
+  } else if (d == 3) {
+    nextGreen = squares[px+1][py] == 2;
   }
+  return !(Math.abs(d - dir) == 2) && !nextGreen;
 }
 
 //sumAndFill() sums the number of squares on both sides of the green path drawm by Pac-Xon. 
