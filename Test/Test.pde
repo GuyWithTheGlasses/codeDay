@@ -1,4 +1,5 @@
 import java.util.*;
+import java.io.*;
 
 PImage bg; //background image
 Image player; //player image
@@ -189,6 +190,26 @@ void sumAndFill() {
     floodFill(x1, y1);
   } else {
     floodFill(x2, y2);
+  }
+}
+
+void project(int x, int y) {
+  int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
+  for (int i = 0; i < path.size (); i++) {
+    int px = path[i].getX();
+    if (px > maxX) {
+      maxX = px;
+    } 
+    if (px < minX) {
+      minX = px;
+    }
+    int py = path[i].getY();
+    if (py > maxY){
+      maxY = py;
+    }
+    if (py < minY){
+      minY = py;
+    }
   }
 }
 
