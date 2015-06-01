@@ -13,7 +13,8 @@ int dir; //direction of player's movement, 0 = UP, 1 = LEFT, 2 = DOWN, 3 = RIGHT
 //There are probably easier ways to do this but it works so 
 Rect blueDrawer = new Rect(-1*sidelen, 0, sidelen, sidelen, 0, 0, 205); 
 Rect greenDrawer = new Rect(-1*sidelen, 0, sidelen, sidelen, 0, 255, 0);
-ArrayList<Shape> path = new ArrayList<Shape>();
+ArrayList<Shape> path = new ArrayList<Shape>(); //keeps track of the path Pac-Xon is drawing
+Image[] border; //keeps a list of all border squares, from top left going clockwise
 
 void setup() {
   //Set all keys as not pressed
@@ -27,19 +28,38 @@ void setup() {
   squares = new int[width / sidelen][height / sidelen]; //0 = empty place; 1 = safe place; 2 = temp path 
   fill (0, 0, 205);
   //Drawing the border, which will always be there
-  //srawing across
-  for (int across = 0; across < width; across = across+sidelen) {
-    rect(across, 0, sidelen, sidelen);
-    rect(across, height - sidelen, sidelen, sidelen);
-    squares[across / sidelen][0] = 1;
-    squares[across / sidelen][(height - sidelen) / sidelen] = 1;
+  border = new Image[squares.length * squares[0].length];
+  int index = 0;
+  //We need to draw the borders like this so that the border array
+  //contains all the squares in the right order
+  
+  //drawing top border, left -> right
+  for (int a = 0 ; a < width ; a = a+sidelen){
+    rect(a, 0, sidelen, sidelen);
+    squares[a/sidelen][0] = 1;
+    border[index] = new Image(a/sidelen, 0);
+    index++;
   }
-  //drawing vertical
-  for (int vert = 0; vert < height; vert = vert+sidelen) {
-    rect (0, vert, sidelen, sidelen);
-    rect (width - sidelen, vert, sidelen, sidelen);
-    squares[0][vert / sidelen] = 1;
-    squares[(width - sidelen) / sidelen][vert / sidelen] = 1;
+  //drawing right border, top -> bottom
+  for (int r = 0; r < height; r = r+sidelen) {
+    rect(width - sidelen, r, sidelen, sidelen);
+    squares[(width - sidelen) / sidelen][r/sidelen] = 1;
+    border[index] = new Image((width - sidelen) / sidelen , r/sidelen);
+    index++;
+  }
+  //drawing bottom border, right -> left
+  for (int b = width - sidelen ; b >= 0 ; b = b-sidelen) {
+    rect (b, height - sidelen, sidelen, sidelen);
+    squares[b/sidelen][(height - sidelen) / sidelen] = 1;
+    border[index] = new Image(b/sidelen , (height - sidelen) / sidelen);
+    index++;
+  }
+  //drawing left border, bottom -> top
+  for (int l = height - sidelen ; l >= 0 ; l = l-sidelen){
+    rect (0, l, sidelen, sidelen);
+    squares[0][l / sidelen] = 1;
+    border[index] = new Image(0 , l/sidelen); 
+    index++;   
   }
 
   player = new Image(0, 0, loadImage("clyde.jpg"));
@@ -120,17 +140,17 @@ Image updateSquares() {
     squares[px / sidelen][py / sidelen] = 2;
     path.add(greenDrawer);
   }
-  return new Image(px / sidelen, py / sidelen);
+  return new Image(px/sidelen, py/sidelen);
 }
 
-//returns true if move is valid, returns false if our player would make an illegal moveddd
+//returns true if move is valid, returns false if our player would make an illegal move
 //whether it be running into its own path or an enemy, in which case we have to implement death
 //int d = direction of movement, 0 = UP, 1 = LEFT, 2 = DOWN, 3 = RIGHT
 //Currently this only stops the player from moving backwards
 boolean checkMove(int d) {
   int px = player.getX() / sidelen;
   int py = player.getY() / sidelen;
-  if (px <= 0 || px >= width || py <= 0 || py >- height)
+  if (px <= 0 || px >= width || py <= 0 || py >= height)
     return true;
 
   boolean nextGreen = false;
@@ -193,23 +213,24 @@ void sumAndFill() {
   }
 }
 
-void project(int x, int y) {
+void fillSquare(int x, int y) {
   int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
   for (int i = 0; i < path.size (); i++) {
-    int px = path[i].getX();
+    int px = path.get(i).getX();
     if (px > maxX) {
       maxX = px;
     } 
     if (px < minX) {
       minX = px;
     }
-    int py = path[i].getY();
+    int py = path.get(i).getY();
     if (py > maxY){
       maxY = py;
     }
     if (py < minY){
       minY = py;
     }
+    
   }
 }
 
