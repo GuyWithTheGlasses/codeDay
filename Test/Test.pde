@@ -11,10 +11,10 @@ int dir; //direction of player's movement, 0 = UP, 1 = LEFT, 2 = DOWN, 3 = RIGHT
 
 //These two "Drawers" are here to draw the blue/green paths 
 //There are probably easier ways to do this but it works so 
-Rect blueDrawer = new Rect(-1*sidelen, 0, sidelen, sidelen, 0, 0, 205); 
+Rect blueDrawer = new Rect(-1*sidelen, 0, sidelen, sidelen, 0, 0, 205);
 Rect greenDrawer = new Rect(-1*sidelen, 0, sidelen, sidelen, 0, 255, 0);
 ArrayList<Shape> path = new ArrayList<Shape>(); //keeps track of the path Pac-Xon is drawing
-Image[] border; //keeps a list of all border squares, from top left going clockwise
+boolean solved = false; //for fillBorder()
 
 void setup() {
   //Set all keys as not pressed
@@ -28,38 +28,20 @@ void setup() {
   squares = new int[width / sidelen][height / sidelen]; //0 = empty place; 1 = safe place; 2 = temp path 
   fill (0, 0, 205);
   //Drawing the border, which will always be there
-  border = new Image[squares.length * squares[0].length];
-  int index = 0;
-  //We need to draw the borders like this so that the border array
-  //contains all the squares in the right order
-  
-  //drawing top border, left -> right
-  for (int a = 0 ; a < width ; a = a+sidelen){
+
+  //drawing top and bottom borders
+  for (int a = 0; a < width; a = a+sidelen) {
     rect(a, 0, sidelen, sidelen);
+    rect (a, height - sidelen, sidelen, sidelen);
     squares[a/sidelen][0] = 1;
-    border[index] = new Image(a/sidelen, 0);
-    index++;
+    squares[a/sidelen][(height - sidelen) / sidelen] = 1;
   }
-  //drawing right border, top -> bottom
-  for (int r = 0; r < height; r = r+sidelen) {
-    rect(width - sidelen, r, sidelen, sidelen);
-    squares[(width - sidelen) / sidelen][r/sidelen] = 1;
-    border[index] = new Image((width - sidelen) / sidelen , r/sidelen);
-    index++;
-  }
-  //drawing bottom border, right -> left
-  for (int b = width - sidelen ; b >= 0 ; b = b-sidelen) {
-    rect (b, height - sidelen, sidelen, sidelen);
-    squares[b/sidelen][(height - sidelen) / sidelen] = 1;
-    border[index] = new Image(b/sidelen , (height - sidelen) / sidelen);
-    index++;
-  }
-  //drawing left border, bottom -> top
-  for (int l = height - sidelen ; l >= 0 ; l = l-sidelen){
-    rect (0, l, sidelen, sidelen);
-    squares[0][l / sidelen] = 1;
-    border[index] = new Image(0 , l/sidelen); 
-    index++;   
+  //drawing left and right borders
+  for (int v = 0; v < height; v = v+sidelen) {
+    rect (0, v, sidelen, sidelen);
+    rect(width - sidelen, v, sidelen, sidelen);
+    squares[0][v/sidelen] = 1;
+    squares[(width - sidelen) / sidelen][v/sidelen] = 1;
   }
 
   player = new Image(0, 0, loadImage("clyde.jpg"));
@@ -150,7 +132,7 @@ Image updateSquares() {
 boolean checkMove(int d) {
   int px = player.getX() / sidelen;
   int py = player.getY() / sidelen;
-  if (px <= 0 || px >= width || py <= 0 || py >= height)
+  if (px <= 0 || px >= width/sidelen - 1 || py <= 0 || py >= height/sidelen - 1)
     return true;
 
   boolean nextGreen = false;
@@ -166,6 +148,7 @@ boolean checkMove(int d) {
   return !(Math.abs(d - dir) == 2) && !nextGreen;
 }
 
+/*
 //sumAndFill() sums the number of squares on both sides of the green path drawm by Pac-Xon. 
 //Then, depending on which side is smaller, it uses floodFill() to fill the side with less squares
 //with blue squares. Along the way, it turns the green path into blue squares as well. 
@@ -212,9 +195,11 @@ void sumAndFill() {
     floodFill(x2, y2);
   }
 }
+*/
 
 void fillSquare(int x, int y) {
   int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
+  //Get the two corners of the rectangle that contains the area we need to fill
   for (int i = 0; i < path.size (); i++) {
     int px = path.get(i).getX();
     if (px > maxX) {
@@ -224,16 +209,40 @@ void fillSquare(int x, int y) {
       minX = px;
     }
     int py = path.get(i).getY();
-    if (py > maxY){
+    if (py > maxY) {
       maxY = py;
     }
-    if (py < minY){
+    if (py < minY) {
       minY = py;
     }
-    
+    //Convert the border of the rectangle that is blue to green (from 1 to 2)
+    fillBorder(minX, minY, maxX, maxY);
   }
 }
 
+void fillBorder(int x, int y, int sx, int sy) {
+  //fills the border of the desired area with green squares
+  //x, y are coordinates of start point in squares[][]
+  //sx, sy, are coordinates of the exit in squares[][]
+  if (squares[x][y] == 0 ||
+    squares[x][y] == 2 ||
+    solved) {
+    return;
+  }
+  if (x == sx && y == sy) {
+    solved = true;
+  }
+  squares[x][y] = 2;
+  fillBorder(x+1, y, sx, sy);
+  fillBorder(x-1, y, sx, sy);
+  fillBorder(x, y+1, sx, sy);
+  fillBorder(x, y-1, sx, sy);
+  if (!solved) {
+    squares[x][y] = 0;
+  }
+}
+
+/*
 //floodFill(x,y) fills an area of the grid with blue squares. It starts from any 
 //point whose value is currently 0 and turns all the squares connected to it blue. 
 //This is done using a breadth-first search method. 
@@ -280,6 +289,7 @@ void floodFill(int x, int y) {
      */
   }
 }
+*/
 
 /*------------------ keyPressed/Released and borderCheck ----------------------*/
 
