@@ -9,11 +9,8 @@ boolean[] keys = new boolean[4]; //keys being pressed
 int step = sidelen; //distance player moves every time a key is pressed
 int dir; //direction of player's movement, 0 = UP, 1 = LEFT, 2 = DOWN, 3 = RIGHT
 
-//These two "Drawers" are here to draw the blue/green paths 
-//There are probably easier ways to do this but it works so 
-Rect blueDrawer = new Rect(-1*sidelen, 0, sidelen, sidelen, 0, 0, 205);
-Rect greenDrawer = new Rect(-1*sidelen, 0, sidelen, sidelen, 0, 255, 0);
-ArrayList<Shape> path = new ArrayList<Shape>(); //keeps track of the path Pac-Xon is drawing
+ArrayList<Node> path = new ArrayList<Node>(); 
+//keeps track of the path Pac-Xon is drawing with Nodes containing x and y
 boolean solved = false; //for fillBorder()
 
 void setup() {
@@ -44,7 +41,7 @@ void setup() {
     squares[(width - sidelen) / sidelen][v/sidelen] = 1;
   }
 
-  player = new Image(0, 0, loadImage("clyde.jpg"));
+  player = new Node(0, 0, loadImage("clyde.jpg"));
   player.drawImage();
   dir = 0;
   /*
@@ -61,7 +58,7 @@ void setup() {
 
 void draw() {
   frameRate(30);
-  Image tmp = updateSquares(); 
+  Node tmp = updateSquares(); 
   //Set the square the player was just at to blue/green accordingly
 
   //Update location of player
@@ -97,7 +94,7 @@ void draw() {
   //tmp is holding the previous location of player
   if (wasGreen && squares[player.getX() / sidelen][player.getY() / sidelen] == 1) {
     fill(0, 0, 205);
-    sumAndFill(); //If we just went from path back to safe squares, fill in the appropriate area
+    fillSquares();
   }
   player.drawImage();
   //System.out.println(player.getX() / sidelen + ", " + player.getY() / sidelen); //testing purposes
@@ -106,23 +103,23 @@ void draw() {
 /*------------------------ Methods used in draw() ------------------------------*/
 
 //updateSquares() redraws the blue and green squares of the path each time the player
-//moves a square. It returns an Image (because we were too lazy to make another class
-//to hold an x and y coordinate) so draw() can check if the player just stepped
-//from a blue square to a green square. If so, then we need to sumAndFill().
-Image updateSquares() {
+//moves a square. It returns an Node so draw() can check if the player just stepped
+//from a blue square to a green square. If so, then we need to fillBorder().
+Node updateSquares() {
   int px = player.getX();
   int py = player.getY();
   int sqcolor = squares[px / sidelen][py / sidelen];
+  Node sq = new Node(px / sidelen, py / sidelen);
   if (sqcolor == 1) {
-    blueDrawer.setXY(px, py);
-    blueDrawer.drawShape();
+    fill(0, 0, 205);
+    rect(px, py, sidelen, sidelen);
   } else if (sqcolor == 0) {
-    greenDrawer.setXY(px, py);
-    greenDrawer.drawShape();
     squares[px / sidelen][py / sidelen] = 2;
-    path.add(greenDrawer);
+    fill(0, 255, 0);
+    rect(px, py, sidelen, sidelen);
+    path.add(sq);
   }
-  return new Image(px/sidelen, py/sidelen);
+  return sq;
 }
 
 //returns true if move is valid, returns false if our player would make an illegal move
@@ -150,54 +147,53 @@ boolean checkMove(int d) {
 
 /*
 //sumAndFill() sums the number of squares on both sides of the green path drawm by Pac-Xon. 
-//Then, depending on which side is smaller, it uses floodFill() to fill the side with less squares
-//with blue squares. Along the way, it turns the green path into blue squares as well. 
-void sumAndFill() {
-  int sum1 = 0;
-  int sum2 = 0;
-  int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
-  boolean side1 = true; //side1==true when we're adding to sum1
-  for (int j = 1; j < squares[0].length - 1; j++) {
-    for (int i = 1; i < squares.length - 1; i++) {
-      if (squares[i][j] == 0) {
-        if (side1) {
-          sum1++;
-          x1 = i;
-          y1 = j;
-        } else {
-          sum2++;
-          x2 = i;
-          y2 = j;
-        }
-      } else if (squares[i][j] == 2) {
-        while (squares[i][j] == 2) {
-          squares[i][j] = 1;
-          rect(i*sidelen, j*sidelen, sidelen, sidelen);
-          i++;
-        }
-        side1 = !side1;
-      }
-      /*
-      System.out.println("Start");
-       for (int m = 0; m < squares[0].length; m++) {
-       for (int n = 0; n < squares.length; n++) {
-       System.out.print(squares[n][m] + " ");
-       }
-       System.out.println();
-       }
-       System.out.println("End" + "\n");
-       */
-    }
-  }
-  if (sum1 < sum2) {
-    floodFill(x1, y1);
-  } else {
-    floodFill(x2, y2);
-  }
-}
-*/
+ //Then, depending on which side is smaller, it uses floodFill() to fill the side with less squares
+ //with blue squares. Along the way, it turns the green path into blue squares as well. 
+ void sumAndFill() {
+ int sum1 = 0;
+ int sum2 = 0;
+ int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+ boolean side1 = true; //side1==true when we're adding to sum1
+ for (int j = 1; j < squares[0].length - 1; j++) {
+ for (int i = 1; i < squares.length - 1; i++) {
+ if (squares[i][j] == 0) {
+ if (side1) {
+ sum1++;
+ x1 = i;
+ y1 = j;
+ } else {
+ sum2++;
+ x2 = i;
+ y2 = j;
+ }
+ } else if (squares[i][j] == 2) {
+ while (squares[i][j] == 2) {
+ squares[i][j] = 1;
+ rect(i*sidelen, j*sidelen, sidelen, sidelen);
+ i++;
+ }
+ side1 = !side1;
+ }
+/*
+ System.out.println("Start");
+ for (int m = 0; m < squares[0].length; m++) {
+ for (int n = 0; n < squares.length; n++) {
+ System.out.print(squares[n][m] + " ");
+ }
+ System.out.println();
+ }
+ System.out.println("End" + "\n");
+ }
+ }
+ if (sum1 < sum2) {
+ floodFill(x1, y1);
+ } else {
+ floodFill(x2, y2);
+ }
+ }
+ */
 
-void fillSquare(int x, int y) {
+void fillSquares(int x, int y) {
   int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
   //Get the two corners of the rectangle that contains the area we need to fill
   for (int i = 0; i < path.size (); i++) {
@@ -216,80 +212,128 @@ void fillSquare(int x, int y) {
       minY = py;
     }
     //Convert the border of the rectangle that is blue to green (from 1 to 2)
-    fillBorder(minX, minY, maxX, maxY);
+    fillBorder(minX, minY, maxX, maxY, minX, minY, maxX, maxY);
+    //then fill in the appropriate squares inside that rectangle
+    convertBlue(minX, minY, maxX, maxY);
   }
 }
 
-void fillBorder(int x, int y, int sx, int sy) {
-  //fills the border of the desired area with green squares
+void fillBorder(int x, int y, int sx, int sy, int minX, int minY, int maxX, int maxY) {
+  //fills the border in the area with corners minX, minY, maxX, maxY with green squares
   //x, y are coordinates of start point in squares[][]
   //sx, sy, are coordinates of the exit in squares[][]
-  if (squares[x][y] == 0 ||
-    squares[x][y] == 2 ||
-    solved) {
+  if (squares[x][y] == 0 || squares[x][y] == 2 || 
+    x < minX || x > maxX || y < minY || y > maxY || solved) {
     return;
   }
   if (x == sx && y == sy) {
     solved = true;
   }
   squares[x][y] = 2;
-  fillBorder(x+1, y, sx, sy);
-  fillBorder(x-1, y, sx, sy);
-  fillBorder(x, y+1, sx, sy);
-  fillBorder(x, y-1, sx, sy);
+  path.add(new Node(x, y));
+  fillBorder(x+1, y, sx, sy, minX, minY, maxX, maxY);
+  fillBorder(x-1, y, sx, sy, minX, minY, maxX, maxY);
+  fillBorder(x, y+1, sx, sy, minX, minY, maxX, maxY);
+  fillBorder(x, y-1, sx, sy, minX, minY, maxX, maxY);
   if (!solved) {
     squares[x][y] = 0;
+    path.remove(path.size() - 1);
+  }
+}
+
+//Inside the green border, we now convert all the necessary squares to blue
+//This is done by checking if, traveling in all 4 directions from the square,
+//we eventually hit a green square
+void convertBlue(int minX, int minY, int maxX, int maxY) {
+  int horiz = maxX - minX;
+  int vert = maxY - minY;
+  for (int i = 0; i < horiz; i++) {
+    for (int j = 0; j < vert; j++) {
+      boolean allGreen = false;
+      //Now we check all 4 directions for green squares
+      boolean up, down, left, right;
+      int cx = i, cy = j;
+      for (int u = 0; u < vert; u++) {
+        if (squares[cx][cy] == 2) {
+          up = true;
+        }
+      }
+      cx = i, cy = j;
+      for (int d = 0; d < vert; d++) {
+        if (squares[cx][cy] == 2) {
+          down = true;
+        }
+      }
+      cx = i, cy = j;
+      for (int l = 0; l < horiz; l++) {
+        if (squares[cx][cy] == 2) {
+          left = true;
+        }
+      }
+      cx = i, cy = j;
+      for (int r = 0; r < horiz; r++) {
+        if (squares[cx][cy] == 2) {
+          right = true;
+        }
+      }
+
+      allGreen = up && down && left && right;
+      if (allGreen) {
+        squares[i][j] = 1;
+        fill(0, 0, 205);
+        rect(i*sidelen, j*sidelen, sidelen, sidelen);
+      }
+    }
   }
 }
 
 /*
 //floodFill(x,y) fills an area of the grid with blue squares. It starts from any 
-//point whose value is currently 0 and turns all the squares connected to it blue. 
-//This is done using a breadth-first search method. 
-void floodFill(int x, int y) {
-  fill(0, 0, 205);
-  Frontier f = new Frontier();
-  f.add(new Image(x, y));
-
-  int tx = 0, ty = 0;
-  Image current = null;
-
-  while (!f.isEmpty ()) {
-    current = f.remove();
-    int cx = current.getX();
-    int cy = current.getY();
-    //System.out.println(cx + ", " + cy);
-    if (squares[cx][cy] == 1) {
-      f.remove();
-    } else {
-      squares[cx][cy] = 1;
-      rect(cx*sidelen, cy*sidelen, sidelen, sidelen);
-    }
-    if (cx < squares.length - 1 && squares[cx+1][cy] == 0) {
-      f.add(new Image(cx+1, cy));
-    }
-    if (cx > 0 && squares[cx-1][cy] == 0) {
-      f.add(new Image(cx-1, cy));
-    }
-    if (cy < squares[cx].length - 1 && squares[cx][cy+1] == 0) {
-      f.add(new Image(cx, cy+1));
-    }
-    if (cy > 0 && squares[cx][cy-1] == 0) {
-      f.add(new Image(cx, cy-1));
-    }
-    /*
-    System.out.println("Start");
-     for (int j = 0; j < squares[0].length; j++) {
-     for (int i = 0; i < squares.length; i++) {
-     System.out.print(squares[i][j] + " ");
-     }
-     System.out.println();
-     }
-     System.out.println("End" + "\n");
-     */
-  }
-}
-*/
+ //point whose value is currently 0 and turns all the squares connected to it blue. 
+ //This is done using a breadth-first search method. 
+ void floodFill(int x, int y) {
+ fill(0, 0, 205);
+ Frontier f = new Frontier();
+ f.add(new Node(x, y));
+ 
+ int tx = 0, ty = 0;
+ Node current = null;
+ 
+ while (!f.isEmpty ()) {
+ current = f.remove();
+ int cx = current.getX();
+ int cy = current.getY();
+ //System.out.println(cx + ", " + cy);
+ if (squares[cx][cy] == 1) {
+ f.remove();
+ } else {
+ squares[cx][cy] = 1;
+ rect(cx*sidelen, cy*sidelen, sidelen, sidelen);
+ }
+ if (cx < squares.length - 1 && squares[cx+1][cy] == 0) {
+ f.add(new Node(cx+1, cy));
+ }
+ if (cx > 0 && squares[cx-1][cy] == 0) {
+ f.add(new Node(cx-1, cy));
+ }
+ if (cy < squares[cx].length - 1 && squares[cx][cy+1] == 0) {
+ f.add(new Node(cx, cy+1));
+ }
+ if (cy > 0 && squares[cx][cy-1] == 0) {
+ f.add(new Node(cx, cy-1));
+ }
+/*
+ System.out.println("Start");
+ for (int j = 0; j < squares[0].length; j++) {
+ for (int i = 0; i < squares.length; i++) {
+ System.out.print(squares[i][j] + " ");
+ }
+ System.out.println();
+ }
+ System.out.println("End" + "\n");
+ }
+ }
+ */
 
 /*------------------ keyPressed/Released and borderCheck ----------------------*/
 
@@ -323,10 +367,10 @@ void keyReleased() {
 }
 
 
-//borderCheck(i) checks if the Image i is outside of the screen
+//borderCheck(i) checks if the Node i is outside of the screen
 //If so, it moves it back to the screen's border
-boolean borderCheck(Image i) {
-  boolean out=false;
+boolean borderCheck(Node i) {
+  boolean out = false;
   if (i.getX()< 0) {
     i.setX(0);
     out=true;
