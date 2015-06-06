@@ -1,13 +1,13 @@
 import java.util.*;
 
 class Frontier {
-  LinkedList<Image> l = new LinkedList<Image>();
+  LinkedList<Node> l = new LinkedList<Node>();
 
-  void add(Image s) {
+  void add(Node s) {
     l.add(s);
   }
 
-  Image remove() {
+  Node remove() {
     if (isEmpty()) {
       return null;
     } else {
