@@ -103,8 +103,16 @@ void draw() {
     //then fill in the appropriate squares inside that new green-bordered shape
     convertBlue();
   }
+  
   player.drawImage();
   //System.out.println(player.getX() / sidelen + ", " + player.getY() / sidelen); //testing purposes
+  for(int i = 0 ; i < squares[0].length ; i++){
+    for(int j = 0 ; j < squares.length ; j++){
+       System.out.printf("%2d " , squares[j][i]);
+    }
+    System.out.println();
+  }
+  System.out.println("\n");
 }
 
 /*----------------------------- Methods used in draw() ----------------------------------*/
@@ -187,6 +195,7 @@ void fillBorder(int x, int y, int sx, int sy) {
           }
         }
       }
+      break;
     }
 
     //If we haven't solved it, we do our usual business  
@@ -199,7 +208,7 @@ void fillBorder(int x, int y, int sx, int sy) {
       tmp.setPrev(current);
       f.add(tmp);
     }
-    if (cx > 0 && squares[cx-1][cy] == 0) {
+    if (cx > 0 && squares[cx-1][cy] == 1) {
       tmp = new Node(cx-1, cy);
       tmp.setPrev(current);
       f.add(tmp);
@@ -209,7 +218,7 @@ void fillBorder(int x, int y, int sx, int sy) {
       tmp.setPrev(current);
       f.add(tmp);
     }
-    if (cy > 0 && squares[cx][cy-1] == 0) {
+    if (cy > 0 && squares[cx][cy-1] == 1) {
       tmp = new Node(cx, cy-1);
       tmp.setPrev(current);
       f.add(tmp);
@@ -233,7 +242,7 @@ void convertBlue() {
           break;
         }
       }
-      cx = i;
+      //cx = i;
       cy = j;
       for (int d = 1; d < squares[i].length - cy; d++) {
         if (squares[cx][cy + d] == 2) {
@@ -241,7 +250,7 @@ void convertBlue() {
           break;
         }
       }
-      cx = i;
+      //cx = i;
       cy = j;
       for (int l = 1; l <= cx; l++) {
         if (l < cx && squares[cx - l][cy] == 2) {
@@ -250,7 +259,7 @@ void convertBlue() {
         }
       }
       cx = i;
-      cy = j;
+      //cy = j;
       for (int r = 1; r < squares.length - cx; r++) {
         if (squares[cx + r][cy] == 2) {
           right = true;
