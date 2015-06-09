@@ -60,7 +60,7 @@ void draw() {
   frameRate(30);
   Node tmp = updateSquares(); 
   //Set the square the player was just at to blue/green accordingly
-  
+
   boolean wasGreen = (squares[tmp.getX()][tmp.getY()] == 2); 
   //For use when determining whether to fill
 
@@ -96,19 +96,19 @@ void draw() {
   if (wasGreen && squares[player.getX() / sidelen][player.getY() / sidelen] == 1) {
     Node start = path.get(0);
     Node end = path.get(path.size() - 1);
-    
+
     //Convert the border to green (from 1 to 2)
     fillBorder(start.getX(), start.getY(), end.getX(), end.getY());
-    
+
     //then fill in the appropriate squares inside that new green-bordered shape
     convertBlue();
   }
-  
+
   player.drawImage();
   //System.out.println(player.getX() / sidelen + ", " + player.getY() / sidelen); //testing purposes
-  for(int i = 0 ; i < squares[0].length ; i++){
-    for(int j = 0 ; j < squares.length ; j++){
-       System.out.printf("%2d " , squares[j][i]);
+  for (int i = 0; i < squares[0].length; i++) {
+    for (int j = 0; j < squares.length; j++) {
+      System.out.printf("%2d ", squares[j][i]);
     }
     System.out.println();
   }
@@ -172,68 +172,78 @@ void fillBorder(int x, int y, int sx, int sy) {
   Frontier f = new Frontier();
   f.add(new Node(x, y));
   Node current = null;
-  
+
   while (!f.isEmpty ()) {
     current = f.remove();
     int cx = current.getX();
     int cy = current.getY();
-    //System.out.println(cx + ", " + cy);
+    //I we solved it, we break and do the operations below
     if (cx == sx && cy == sy) {
-      //If we've reached the other endpoint of the border
-      //Trace back through the path and make the border green
-      Node t = current;
-      while (t != null) {
-        path.add(t);
-        squares[t.getX()][t.getY()] = 2;
-        t = t.getPrev();
-      }
-      //And reset all the squares we marked as "visited" back to blue
-      for (int i = 0; i < squares.length; i++) {
-        for (int j = 0; j < squares[i].length; j++) {
-          if (squares[i][j] == -1) {
-            squares[i][j] = 1;
-          }
-        }
-      }
       break;
     }
-
     //If we haven't solved it, we do our usual business  
     if (squares[cx][cy] == 1) {
       squares[cx][cy] = -1;
     }
-    Node tmp;
     if (cx < squares.length - 1 && squares[cx+1][cy] == 1) {
-      tmp = new Node(cx+1, cy);
-      tmp.setPrev(current);
-      f.add(tmp);
+      Node t1 = new Node(cx+1, cy);
+      t1.setPrev(current);
+      f.add(t1);
     }
     if (cx > 0 && squares[cx-1][cy] == 1) {
-      tmp = new Node(cx-1, cy);
-      tmp.setPrev(current);
-      f.add(tmp);
+      Node t2 = new Node(cx-1, cy);
+      t2.setPrev(current);
+      f.add(t2);
     }
     if (cy < squares[cx].length - 1 && squares[cx][cy+1] == 1) {
-      tmp = new Node(cx, cy+1);
-      tmp.setPrev(current);
-      f.add(tmp);
+      Node t3 = new Node(cx, cy+1);
+      t3.setPrev(current);
+      f.add(t3);
     }
     if (cy > 0 && squares[cx][cy-1] == 1) {
-      tmp = new Node(cx, cy-1);
-      tmp.setPrev(current);
-      f.add(tmp);
+      Node t4 = new Node(cx, cy-1);
+      t4.setPrev(current);
+      f.add(t4);
+    }
+  }
+  //If we've reached the other endpoint of the border
+  //Trace back through the path and make the border green
+  Node t = current;
+  while (t != null) {
+    path.add(t);
+    squares[t.getX()][t.getY()] = 2;
+    t = t.getPrev();
+  }
+  //And reset all the squares we marked as "visited" back to blue
+  for (int i = 0; i < squares.length; i++) {
+    for (int j = 0; j < squares[i].length; j++) {
+      if (squares[i][j] == -1) {
+        squares[i][j] = 1;
+      }
     }
   }
 }
 
-//We now convert all the necessary squares to blue
-//This is done by checking if, traveling in all 4 directions from a square,
-//we eventually hit a green square
-void convertBlue() {
-  for (int i = 0; i < squares.length; i++) {
-    for (int j = 0; j < squares[i].length; j++) {
+//Now we find a starting point for the floodFill (hence the name)
+void findStart() {
+  int minX = Integer.MAX_VALUE, int minY = Integer.MAX_VALUE;
+  //By finding the upper-left-most corner of the border, we can
+  //lower the amount of times we have to loop to find a square 
+  //inside of the shape that must be filled
+  for(Node n : path){
+    if(n.getX() < minX){
+      minX = n.getX();
+    }
+    if(n.getY() < minY){
+      minY = n.getY();
+    }
+  }
+  
+  //Now we do the standard looping technique
+  for(int i = minX ; i < squares.length ; i++){
+    for(int j = minY ; j < squares[i].length ; j++){
       boolean allGreen = false;
-      //Now we check all 4 directions for green squares
+      //We check all 4 directions for green squares
       boolean up = false, down = false, left = false, right = false;
       int cx = i, cy = j;
       for (int u = 1; u <= cy; u++) {
@@ -242,7 +252,7 @@ void convertBlue() {
           break;
         }
       }
-      //cx = i;
+      cx = i;
       cy = j;
       for (int d = 1; d < squares[i].length - cy; d++) {
         if (squares[cx][cy + d] == 2) {
@@ -250,39 +260,74 @@ void convertBlue() {
           break;
         }
       }
-      //cx = i;
+      cx = i;
       cy = j;
       for (int l = 1; l <= cx; l++) {
-        if (l < cx && squares[cx - l][cy] == 2) {
+        if (squares[cx - l][cy] == 2) {
           left = true;
           break;
         }
       }
       cx = i;
-      //cy = j;
+      cy = j;
       for (int r = 1; r < squares.length - cx; r++) {
         if (squares[cx + r][cy] == 2) {
           right = true;
           break;
         }
       }
-
+      //If all 4 directions are green, then we're good!
       allGreen = up && down && left && right;
       if (allGreen) {
-        squares[i][j] = 1;
-        fill(0, 0, 205);
-        rect(i*sidelen, j*sidelen, sidelen, sidelen);
+        
       }
     }
   }
-  //Reset all the squares on the path to blue as well
-  for(Node n: path){
+}
+
+//Once we find a square inside the desired area with the previous algorithm
+//we can floodFill starting from that square to make all of it blue.
+void floodFill(int x, int y) {
+  Frontier f = new Frontier();
+  f.add(new Node(x, y));
+  Node current = null;
+  fill(0, 0, 205);
+
+  while (!f.isEmpty ()) {
+    current = f.remove();
+    int cx = current.getX();
+    int cy = current.getY();
+    //Safety check just to make sure we aren't filling in the wrong squares
+    if (squares[cx][cy] == 1 || squares[cx][cy] == 2) {
+      f.remove();
+    } 
+    //If the square is indeed blank, we fill it in as blue
+    else {
+      squares[cx][cy] = 1;
+      rect(cx*sidelen, cy*sidelen, sidelen, sidelen);
+    }
+    //Then we add all the adjacent squares to the frontier, but only
+    //if they're blank. So that check up there is only for extra security. 
+    if (cx < squares.length - 1 && squares[cx+1][cy] == 0) {
+      f.add(new Node(cx+1, cy));
+    }
+    if (cx > 0 && squares[cx-1][cy] == 0) {
+      f.add(new Node(cx-1, cy));
+    }
+    if (cy < squares[cx].length - 1 && squares[cx][cy+1] == 0) {
+      f.add(new Node(cx, cy+1));
+    }
+    if (cy > 0 && squares[cx][cy-1] == 1) {
+      f.add(new Node(cx, cy-1));
+    }
+  }
+  //When we're done, reset all the nodes on the border as well to blue
+  fill(0, 0, 205);
+  for (Node n : path) {
     squares[n.getX()][n.getY()] = 1;
-    fill(0, 0, 205);
     rect(n.getX()*sidelen, n.getY()*sidelen, sidelen, sidelen);
   }
 }
-
 
 /*------------------ keyPressed/Released and borderCheck ----------------------*/
 
