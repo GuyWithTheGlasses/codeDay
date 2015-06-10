@@ -101,18 +101,13 @@ void draw() {
     fillBorder(start.getX(), start.getY(), end.getX(), end.getY());
 
     //then fill in the appropriate squares inside that new green-bordered shape
-    convertBlue();
+    //by finding a starting point inside the shapes
+    findAndFill();
   }
 
   player.drawImage();
   //System.out.println(player.getX() / sidelen + ", " + player.getY() / sidelen); //testing purposes
-  for (int i = 0; i < squares[0].length; i++) {
-    for (int j = 0; j < squares.length; j++) {
-      System.out.printf("%2d ", squares[j][i]);
-    }
-    System.out.println();
-  }
-  System.out.println("\n");
+  printsq();
 }
 
 /*----------------------------- Methods used in draw() ----------------------------------*/
@@ -165,7 +160,6 @@ boolean checkMove(int d) {
 //converts it to green(2). This is done so the algorithm for filling in actually works. 
 //x and y are the start point, sx and sy are the solution point
 void fillBorder(int x, int y, int sx, int sy) {
-
   //We know the points at which Pac-Xon left and came back to the blue squares. 
   //So we can do a breadth-first search to always return the shortest path between those 2,
   //which is the line that must be turned blue.
@@ -184,7 +178,9 @@ void fillBorder(int x, int y, int sx, int sy) {
     //If we haven't solved it, we do our usual business  
     if (squares[cx][cy] == 1) {
       squares[cx][cy] = -1;
+      printsq();
     }
+    //and add alladjacent nodes that we can travel on (they are 1)
     if (cx < squares.length - 1 && squares[cx+1][cy] == 1) {
       Node t1 = new Node(cx+1, cy);
       t1.setPrev(current);
@@ -213,35 +209,39 @@ void fillBorder(int x, int y, int sx, int sy) {
     path.add(t);
     squares[t.getX()][t.getY()] = 2;
     t = t.getPrev();
+    printsq();
   }
   //And reset all the squares we marked as "visited" back to blue
   for (int i = 0; i < squares.length; i++) {
     for (int j = 0; j < squares[i].length; j++) {
       if (squares[i][j] == -1) {
         squares[i][j] = 1;
+        printsq();
       }
     }
   }
 }
 
 //Now we find a starting point for the floodFill (hence the name)
-void findStart() {
-  int minX = Integer.MAX_VALUE, int minY = Integer.MAX_VALUE;
+void findAndFill() {
+  int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
   //By finding the upper-left-most corner of the border, we can
   //lower the amount of times we have to loop to find a square 
   //inside of the shape that must be filled
-  for(Node n : path){
-    if(n.getX() < minX){
+  for (Node n : path) {
+    if (n.getX() < minX) {
       minX = n.getX();
     }
-    if(n.getY() < minY){
+    if (n.getY() < minY) {
       minY = n.getY();
     }
   }
-  
+
   //Now we do the standard looping technique
-  for(int i = minX ; i < squares.length ; i++){
-    for(int j = minY ; j < squares[i].length ; j++){
+  boolean found = false; //to be able to break out of both for loops
+  for (int i = minX; found != true && i < squares.length; i++) {
+    for (int j = minY; found != true && j < squares[i].length; j++) {   
+      printsq();   
       boolean allGreen = false;
       //We check all 4 directions for green squares
       boolean up = false, down = false, left = false, right = false;
@@ -279,7 +279,8 @@ void findStart() {
       //If all 4 directions are green, then we're good!
       allGreen = up && down && left && right;
       if (allGreen) {
-        
+        floodFill(i, j);
+        found = true;
       }
     }
   }
@@ -305,6 +306,7 @@ void floodFill(int x, int y) {
     else {
       squares[cx][cy] = 1;
       rect(cx*sidelen, cy*sidelen, sidelen, sidelen);
+      printsq();
     }
     //Then we add all the adjacent squares to the frontier, but only
     //if they're blank. So that check up there is only for extra security. 
@@ -326,6 +328,7 @@ void floodFill(int x, int y) {
   for (Node n : path) {
     squares[n.getX()][n.getY()] = 1;
     rect(n.getX()*sidelen, n.getY()*sidelen, sidelen, sidelen);
+    printsq();
   }
 }
 
@@ -360,7 +363,6 @@ void keyReleased() {
   }
 }
 
-
 //borderCheck(i) checks if the Node i is outside of the screen
 //If so, it moves it back to the screen's border
 boolean borderCheck(Image i) {
@@ -382,5 +384,24 @@ boolean borderCheck(Image i) {
     out=true;
   }
   return out;
+}
+
+void delay(int time) {
+  try {
+    Thread.sleep(time);
+  } 
+  catch (Exception e) {
+  }
+}
+
+void printsq() {
+  delay(100);
+  for (int i = 0; i < squares[0].length; i++) {
+    for (int j = 0; j < squares.length; j++) {
+      System.out.printf("%2d ", squares[j][i]);
+    }
+    System.out.println();
+  }
+  System.out.println("\n");
 }
 
