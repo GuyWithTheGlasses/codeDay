@@ -61,30 +61,30 @@ void draw() {
   Node tmp = updateSquares(); 
   //Set the square the player was just at to blue/green accordingly
 
-  boolean wasGreen = (squares[tmp.getX()][tmp.getY()] == 2); 
+  int prevcolor = squares[tmp.getX()][tmp.getY()];
   //For use when determining whether to fill
 
   //Update location of player
   if (keys[0]) {
-    if (checkMove(0) || !wasGreen) {
+    if (checkMove(0) || prevcolor != 2) {
       player.addY(-1*step);
       dir = 0;
       //System.out.println(checkMove(0));
     }
   } else if (keys[1]) {
-    if (checkMove(1) || !wasGreen) {
+    if (checkMove(1) || prevcolor != 2) {
       player.addX(-1*step);
       dir = 1;
       //System.out.println(checkMove(1));
     }
   } else if (keys[2]) {
-    if (checkMove(2) || !wasGreen) {
+    if (checkMove(2) || prevcolor != 2) {
       player.addY(step);
       dir = 2;
       //System.out.println(checkMove(2));
     }
   } else if (keys[3]) {
-    if (checkMove(3) || !wasGreen) {
+    if (checkMove(3) || prevcolor != 2) {
       player.addX(step);
       dir = 3;
       //System.out.println(checkMove(3));
@@ -92,8 +92,17 @@ void draw() {
   }
   borderCheck(player); //Move player back inside frame if necessary
 
-  //If we just went from a green square to a blue square, then we need to fill some shape.
-  if (wasGreen && squares[player.getX() / sidelen][player.getY() / sidelen] == 1) {
+  int curcolor = squares[player.getX() / sidelen][player.getY() / sidelen];
+  //Now we determine what needs to be done depending on the colors of the squares
+  if (prevcolor == 1 && curcolor != 1) {
+    //Make the corner of the shape green as well to enable filling algorithm later
+    squares[player.getX() / sidelen][player.getY() / sidelen] = 2;
+    path.add(new Node(player.getX() / sidelen, player.getY() / sidelen));
+  } else if (prevcolor == 2 && curcolor == 1) {
+    //Same thing, make that square green
+    squares[player.getX() / sidelen][player.getY() / sidelen] = 2;
+    path.add(new Node(player.getX() / sidelen, player.getY() / sidelen));
+
     Node start = path.get(0);
     Node end = path.get(path.size() - 1);
 
@@ -123,7 +132,7 @@ Node updateSquares() {
   if (sqcolor == 1) {
     fill(0, 0, 205);
     rect(px, py, sidelen, sidelen);
-  } else if (sqcolor == 0) {
+  } else if (sqcolor == 0 || sqcolor == 2) {
     squares[px / sidelen][py / sidelen] = 2;
     fill(0, 255, 0);
     rect(px, py, sidelen, sidelen);
@@ -176,11 +185,11 @@ void fillBorder(int x, int y, int sx, int sy) {
       break;
     }
     //If we haven't solved it, we do our usual business  
-    if (squares[cx][cy] == 1) {
+    else if (squares[cx][cy] == 1) {
       squares[cx][cy] = -1;
       printsq();
     }
-    //and add alladjacent nodes that we can travel on (they are 1)
+    //and add all adjacent nodes that we can travel on (they are 1)
     if (cx < squares.length - 1 && squares[cx+1][cy] == 1) {
       Node t1 = new Node(cx+1, cy);
       t1.setPrev(current);
