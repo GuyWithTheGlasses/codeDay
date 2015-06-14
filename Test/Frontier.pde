@@ -19,4 +19,3 @@ class Frontier {
     return l.isEmpty();
   }
 }
-
