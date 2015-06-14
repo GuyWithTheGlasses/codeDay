@@ -79,18 +79,19 @@
       w = i.width;
       h = i.height;
     }
-    void drawImage(){
+    void drawImage(int [][] squares){
       image(i, x, y);
-      autoMove();
+      autoMove(squares);
     }
     
-    void autoMove(){
+    void autoMove(int[][] squares ){
       x=x+ (xspeed * xdir);
       y= y + (yspeed* ydir);
-      if (x >= width-2 * rad || x < 2 * rad) {
+    /*  if (x >= width-2 * rad || x < 2 * rad) {
       xdir *= -1;
-    }
-    if (y >= height- 2 * rad || y < 2 * rad) {
+    }*/
+    if (squares[x/20-1][y/20-1] ==1|| squares[x/20+1][y/20+1] ==1){
+      xdir *= -1 ;
       ydir *= -1;
     }
   

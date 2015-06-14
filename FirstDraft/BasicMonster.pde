@@ -48,12 +48,12 @@ class BasicMonster extends Monster{
     h = i.height;
   }
  
-  void drawImage(){
-    super.drawImage();
+  void drawImage(int[][] squares){
+    super.drawImage(squares);
   }
   
-  void autoMove(){
-    super.autoMove();
+  void autoMove(int[][] squares){
+    super.autoMove(squares);
   } 
   
 }

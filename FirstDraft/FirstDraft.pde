@@ -14,7 +14,7 @@ void draw(){
   background (bg);
   fill (0,0,205);
   
-    squares = new int[width / sidelen][height / sidelen]; //0 = empty place; 1 = safe place; 2 = temp path 
+  squares = new int[width / sidelen][height / sidelen]; //0 = empty place; 1 = safe place; 2 = temp path 
   fill (0, 0, 205);
   //Drawing the border, which will always be there
 
@@ -25,6 +25,7 @@ void draw(){
     rect (a, height - sidelen, sidelen, sidelen);
     squares[a/sidelen][0] = 1;
     squares[a/sidelen][1] = 1;
+    squares[a/sidelen][(height - 2 * sidelen) / sidelen] = 1;
     squares[a/sidelen][(height - sidelen) / sidelen] = 1;
   }
   //drawing left and right borders
@@ -43,6 +44,6 @@ void draw(){
    }
    System.out.println("End" + "\n");
    
-  orange.drawImage();
+  orange.drawImage(squares);
   delay(100);
 }
