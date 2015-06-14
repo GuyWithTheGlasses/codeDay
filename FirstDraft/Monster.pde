@@ -90,9 +90,8 @@
     /*  if (x >= width-2 * rad || x < 2 * rad) {
       xdir *= -1;
     }*/
-    if (squares[x/20-1][y/20-1] ==1|| squares[x/20+1][y/20+1] ==1){
-      xdir *= -1 ;
-      ydir *= -1;
+    if (squares[x/20-1][y/20] ==1|| squares[x/20+1][y/20] ==1){
+      ydir*=-1;
     }
   
     }

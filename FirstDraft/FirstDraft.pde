@@ -22,6 +22,7 @@ void draw(){
   for (int a = 0; a < width; a = a+sidelen) {
     rect(a, 0, sidelen, sidelen);
     rect (a, 20, sidelen, sidelen);
+    rect (a, height - 2 * sidelen, sidelen, sidelen);
     rect (a, height - sidelen, sidelen, sidelen);
     squares[a/sidelen][0] = 1;
     squares[a/sidelen][1] = 1;
