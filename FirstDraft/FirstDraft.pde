@@ -35,13 +35,10 @@ void draw(){
     squares[(width - sidelen) / sidelen][v/sidelen] = 1;
   }
   
-  fill(0,205,0);
-  for (int i=0; i<squares.length;i++){
-   rect(i*20, 80, sidelen, sidelen);
-   rect(i*20, 100, sidelen, sidelen);
-   squares[i][4]=2;
-   squares[i][5]=2;
-  }
+  for (int b = 0; b < width; b = b+sidelen) {
+    rect(b, 80, sidelen, sidelen);
+    squares[b/sidelen][4] = 2;
+}
      
   orange.drawImage(squares);
   pink.drawImage(squares);

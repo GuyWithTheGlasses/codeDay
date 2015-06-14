@@ -83,15 +83,19 @@ class Monster {
   void autoMove(int[][] squares ) {
     x=x+ (xspeed * xdir);
     y= y + (yspeed* ydir);
-    /*  if (x >= width-2 * rad || x < 2 * rad) {
-     xdir *= -1;
-     }*/
-    if (squares[x/20-1][y/20] ==1|| squares[x/20+1][y/20] ==1) {
-      xdir*=-1;
+    try {
+      if (squares[x/20-1][y/20] ==1|| squares[x/20+1][y/20] ==1) {
+        xdir*=-1;
+      }
+      if (squares[x/20][y/20-1] ==1|| squares[x/20][y/20+1] ==1) {
+        ydir*=-1;
+      }
     }
-    if (squares[x/20][y/20-1] ==1|| squares[x/20][y/20+1] ==1) {
-      ydir*=-1;
+    catch(Exception e) {
+      System.out.println("lol");
     }
   }
+  
+  
 }
 
