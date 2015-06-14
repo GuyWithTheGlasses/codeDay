@@ -39,7 +39,7 @@ void draw(){
   for (int i=0; i<squares.length;i++){
    rect(i*20, 80, sidelen, sidelen);
    rect(i*20, 100, sidelen, sidelen);
-   squares[i][4]=1;
+   squares[i][4]=2;
   }
      
   orange.drawImage(squares);
