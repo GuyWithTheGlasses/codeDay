@@ -1,6 +1,7 @@
 PImage bg;
 int rad=10;
-boolean [][] squares= new boolean [height/ (2*rad)][width/ (2*rad)];
+int sidelen=20;
+int [][] squares= new int[width / sidelen][height / sidelen];
 BasicMonster orange,pink;
 
 void setup(){
@@ -13,18 +14,20 @@ void draw(){
   background (bg);
   fill (0,0,205);
   
-  //fixed thing across
-  for (int across=0; across<width; across=across+20){
-     rect(across,0,20,20);
-     rect (across, height-20,20,20);
+  for (int a = 0; a < width; a = a+sidelen) {
+    rect(a, 0, sidelen, sidelen);
+    rect (a, height - sidelen, sidelen, sidelen);
+    squares[a/sidelen][0] = 1;
+    squares[a/sidelen][(height - sidelen) / sidelen] = 1;
   }
-  
-  //filled vertical
-  for (int vert =0; vert <height; vert =vert+20){
-    rect (0, vert, 20,20);
-    rect (width -20, vert, 20,20); 
+  //drawing left and right borders
+  for (int v = 0; v < height; v = v+sidelen) {
+    rect (0, v, sidelen, sidelen);
+    rect(width - sidelen, v, sidelen, sidelen);
+    squares[0][v/sidelen] = 1;
+    squares[(width - sidelen) / sidelen][v/sidelen] = 1;
   }
-  
+
   orange.drawImage();
   delay(100);
 }
