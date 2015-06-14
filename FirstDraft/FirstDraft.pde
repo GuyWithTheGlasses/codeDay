@@ -21,8 +21,10 @@ void draw(){
   //drawing top and bottom borders
   for (int a = 0; a < width; a = a+sidelen) {
     rect(a, 0, sidelen, sidelen);
+    rect (a, 20, sidelen, sidelen);
     rect (a, height - sidelen, sidelen, sidelen);
     squares[a/sidelen][0] = 1;
+    squares[a/sidelen][1] = 1;
     squares[a/sidelen][(height - sidelen) / sidelen] = 1;
   }
   //drawing left and right borders
