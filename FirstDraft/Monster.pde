@@ -1,8 +1,7 @@
 import java.util.*;
-import java.io.*;
 
 class Monster{
-  int x, y, w, h;
+  int x, y, w, h, xdir,ydir,rad,xspeed, yspeed;
   PImage i;
   
   Monster(int xcor, int ycor, PImage img){
@@ -11,6 +10,11 @@ class Monster{
     i = img;
     w = i.width;
     h = i.height;
+    rad=w;
+    xspeed=20;
+    yspeed=20;
+    xdir=1;
+    ydir=1;
   }
   
   int getX() {
@@ -56,9 +60,18 @@ class Monster{
   }
   void drawImage(){
     image(i, x, y);
+    autoMove();
   }
   
   void autoMove(){
-    
+    x=x+ (xspeed * xdir);
+    y= y + (yspeed* ydir);
+    if (x >= width-2 * rad || x < 2 * rad) {
+    xdir *= -1;
+  }
+  if (y >= height- 2 * rad || y < 2 * rad) {
+    ydir *= -1;
+  }
+
   }
 }

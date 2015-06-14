@@ -50,10 +50,11 @@ class BasicMonster extends Monster{
  
   void drawImage(){
     image(i, x, y);
+    autoMove();
   }
   
   void autoMove(){
-    
+    super.autoMove();
   } 
   
 }

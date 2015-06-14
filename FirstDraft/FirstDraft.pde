@@ -1,12 +1,12 @@
 PImage bg;
 int rad=10;
 boolean [][] squares= new boolean [height/ (2*rad)][width/ (2*rad)];
-BasicMonster bitch;
+BasicMonster orange,pink;
 
 void setup(){
   size(1280 ,720);
   bg = loadImage("crew.jpg");
-  bitch = new BasicMonster(500,500,loadImage("orange_ghost.png"));
+  orange = new BasicMonster(500,500,loadImage("orange_ghost.png"));
 }
 
 void draw(){
@@ -25,5 +25,6 @@ void draw(){
     rect (width -20, vert, 20,20); 
   }
   
-  bitch.drawImage();
+  orange.drawImage();
+  delay(100);
 }
