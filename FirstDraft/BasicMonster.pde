@@ -1,13 +1,9 @@
-class BasicMonster{
-  int x, y, w, h;
-  PImage i;
+import java.util.*;
+import java.io.*;
+class BasicMonster extends Monster{
   
   BasicMonster(int xcor, int ycor, PImage img){
-    x = xcor;
-    y = ycor;
-    i = img;
-    w = i.width;
-    h = i.height;
+     super(xcor,ycor,img);
   }
   
   int getX() {
@@ -51,8 +47,13 @@ class BasicMonster{
     w = i.width;
     h = i.height;
   }
+ 
   void drawImage(){
     image(i, x, y);
   }
+  
+  void autoMove(){
+    
+  } 
   
 }

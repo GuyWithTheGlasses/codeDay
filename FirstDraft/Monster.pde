@@ -1,3 +1,6 @@
+import java.util.*;
+import java.io.*;
+
 class Monster{
   int x, y, w, h;
   PImage i;
@@ -55,4 +58,7 @@ class Monster{
     image(i, x, y);
   }
   
+  void autoMove(){
+    
+  }
 }
