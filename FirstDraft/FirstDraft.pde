@@ -1,6 +1,6 @@
 PImage bg;
 int rad=10;
-boolean [][] squares= new boolean [height/ (2*rad)][width/ (2*rad)];
+int [][] squares= new int [height/ (2*rad)][width/ (2*rad)];
 BasicMonster orange,pink;
 
 void setup(){
@@ -16,6 +16,7 @@ void draw(){
   //fixed thing across
   for (int across=0; across<width; across=across+20){
      rect(across,0,20,20);
+     squares[0][across]=
      rect (across, height-20,20,20);
   }
   

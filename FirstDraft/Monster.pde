@@ -14,7 +14,12 @@
       rad=w;
       xspeed=20;
       yspeed=20;
-      startdir=rand.nextInt(4)
+      startdir();
+      
+    }
+    
+    void startdir(){
+           startdir=rand.nextInt(4);
       if (startdir == 0) {
         xdir=-1;
         ydir=-1;
@@ -27,11 +32,10 @@
         xdir=-11;
         ydir=1;
       }
-       if (startdir == 1) {
+     else if (startdir == 3) {
         xdir=1;
         ydir=-1;
-      }
-      
+      } 
     }
     
     int getX() {
