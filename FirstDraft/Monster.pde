@@ -78,6 +78,7 @@ class Monster {
   void drawImage(int [][] squares) {
     image(i, x, y);
     autoMove(squares);
+    collision(squares);
   }
 
   void autoMove(int[][] squares ) {
@@ -96,6 +97,21 @@ class Monster {
     }
   }
   
+  void collision (int[][] squares){
+    try{
+     if (squares[x/20-1][y/20] ==2|| squares[x/20+1][y/20] ==2) {
+       xdir*=-1;
+       
+      }
+      if (squares[x/20][y/20-1] ==2|| squares[x/20][y/20+1] ==2) {
+        ydir*=-1;
+      }
+    } catch(Exception e){ 
+      System.out.println("D:");
+    }
+    
+  
+  }
   
 }
 

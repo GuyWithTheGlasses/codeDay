@@ -56,4 +56,8 @@ class BasicMonster extends Monster{
     super.autoMove(squares);
   } 
   
+  void collision(int[][] squares){
+     super.collision(squares); 
+  }
+  
 }
