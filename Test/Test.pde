@@ -3,11 +3,13 @@ import java.io.*;
 
 PImage bg; //background image
 Image player; //player image
+Monster orange, pink; //monster AI
 int sidelen = 20; //length of one unit
 int[][] squares; //array of units, each unit is sidelen*sidelen pixels
 boolean[] keys = new boolean[4]; //keys being pressed
 int step = sidelen; //distance player moves every time a key is pressed
 int dir; //direction of player's movement, 0 = UP, 1 = LEFT, 2 = DOWN, 3 = RIGHT
+Random rnd=new Random();
 
 ArrayList<Node> path = new ArrayList<Node>(); 
 //keeps track of the path Pac-Xon is drawing with Nodes containing x and y
@@ -23,6 +25,11 @@ void setup() {
   size(1280, 720);
   bg = loadImage("crew.jpg"); 
   background (bg);
+
+  orange = new Monster((rnd.nextInt(61)+1)*20, (rnd.nextInt(34)+1)*20, loadImage("orange_ghost.png"));
+  pink = new Monster((rnd.nextInt(61)+1)*20, (rnd.nextInt(34)+1)*20, loadImage("pink_ghost.png"));
+
+
 
   squares = new int[width / sidelen][height / sidelen]; //0 = empty place; 1 = safe place; 2 = temp path 
   fill (0, 0, 205);
@@ -46,6 +53,8 @@ void setup() {
   player = new Image(0, 0, loadImage("clyde.jpg"));
   player.drawImage();
   dir = 0;
+  orange.drawImage(squares);
+  pink.drawImage(squares);
   /*
   for (int i = 0; i < squares.length; i++) {
    for (int j = 0; j < squares[i].length; j++) {
@@ -60,6 +69,7 @@ void setup() {
 
 void draw() {
   frameRate(30);
+  //background (bg);
   Node tmp = updateSquares(); 
   //Set the square the player was just at to blue/green accordingly
 
@@ -118,7 +128,8 @@ void draw() {
   }
 
   player.drawImage();
-  printsq();
+  //printsq();
+
 }
 
 /*----------------------------- Methods used in draw() ----------------------------------*/
@@ -195,7 +206,7 @@ void fillBorder(int x, int y) {
         for (int j = 0; j < squares[i].length; j++) {
           if (squares[i][j] == -1) {
             squares[i][j] = 1;
-            printsq();
+            //printsq();
           }
         }
       }
@@ -205,7 +216,7 @@ void fillBorder(int x, int y) {
     //If we haven't solved it, we mark the current square as -1, or "visited"
     else if (squares[cx][cy] == 1) {
       squares[cx][cy] = -1;
-      printsq();
+      //printsq();
     }
     //and add all adjacent squares that meet the requirements
     addToFront(cx+1, cy);
@@ -256,7 +267,7 @@ void findAndFill() {
   boolean found = false; //to be able to break out of both for loops
   for (int i = minX + 1; found != true && i < squares.length; i++) {
     for (int j = minY + 1; found != true && j < squares[i].length; j++) {   
-      printsq();
+      //printsq();
       boolean allGreen = false;
       //We check all 4 directions for green squares
       boolean up = false, down = false, left = false, right = false;
@@ -316,7 +327,7 @@ void floodFill(int x, int y) {
     //If the square is valid for filling, we mark it for later
     if (squares[cx][cy] == 0 || squares[cx+1][cy] == 1) {
       squares[cx][cy] = 4; //aka "visited"
-      printsq();
+      // printsq();
     }
     //Then we add all the adjacent squares to the frontier, but only if they're blank or blue. 
     if (cx < squares.length - 1 && (squares[cx+1][cy] == 0 || squares[cx+1][cy] == 1)) {
@@ -339,7 +350,7 @@ void floodFill(int x, int y) {
       if (squares[i][j] == 4) {
         squares[i][j] = 1;
         rect(i*sidelen, j*sidelen, sidelen, sidelen);
-        printsq();
+        //printsq();
       }
     }
   }
@@ -347,7 +358,7 @@ void floodFill(int x, int y) {
   for (Node n : path) {
     squares[n.getX()][n.getY()] = 1;
     rect(n.getX()*sidelen, n.getY()*sidelen, sidelen, sidelen);
-    printsq();
+    //printsq();
   }
   path.clear();
 }
@@ -424,3 +435,4 @@ void printsq() {
   }
   System.out.println("\n");
 }
+
