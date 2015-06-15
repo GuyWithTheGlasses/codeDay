@@ -9,8 +9,8 @@ Random rnd=new Random();
 void setup(){
   size(1280 ,720);
   bg = loadImage("crew.jpg");
-  orange = new BasicMonster((rnd.nextInt(62)+1)*20 ,(rnd.nextInt(34)+1)*20  ,loadImage("orange_ghost.png"));
-  pink = new BasicMonster((rnd.nextInt(62)+1)*20,(rnd.nextInt(34)+1)*20,loadImage("pink_ghost.png"));
+  orange = new BasicMonster((rnd.nextInt(61)+1)*20 ,(rnd.nextInt(34)+1)*20  ,loadImage("orange_ghost.png"));
+  pink = new BasicMonster((rnd.nextInt(61)+1)*20,(rnd.nextInt(34)+1)*20,loadImage("pink_ghost.png"));
 }
 
 void draw(){
@@ -38,6 +38,8 @@ void draw(){
   for (int b = 0; b < width; b = b+sidelen) {
     rect(b, 80, sidelen, sidelen);
     squares[b/sidelen][4] = 2;
+    squares[0][4]=1;
+    squares[63][4]=1;
 }
      
   orange.drawImage(squares);
