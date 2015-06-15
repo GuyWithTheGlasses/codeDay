@@ -29,6 +29,11 @@ void draw() {
     clickStart();
     clickHelp();
   }
+  
+  if(helpScreen){
+    hoverBack();
+    clickBack();
+  }
 }
 
 //--------------create------------------
@@ -131,18 +136,36 @@ void clickHelp() {
     image(bg, 0, 0);
     createBack();
     fill(255);
-    rect (50, 50, 700, 700, 6, 6, 6, 6);
-    //Rules();
+    rect(100, height/2 + 50, 1080, 200, 6);
+    rules();
   }
 }
 
 void clickBack() {
   if ((mousePressed && (mouseButton == LEFT)) && overBack()) {
-    if (helpScreen == true) { 
       startScreen = true;
       bgScreen = false;
       helpScreen = false;
-    }
   }
 }
 
+//---------------Rules of the Game---------------
+
+void rules(){
+  int firstLine=height/2 + 60;
+  int i=15;
+  fill(0);
+  textAlign(CENTER, CENTER);
+  textSize (18);
+  text("Rules of Pac-Xon", width/2, firstLine);
+  textSize(13);
+  text("Use the W,A,S, and D keys to move Thluffy SinClair around the field.", width/2,firstLine+ i);
+  text("The safe zone is the blue squares. Thluffy may freely wonder about this area.", width/2,firstLine+ 2* i);
+  text("Thluffy will draw a path (the green squares) on uncharted area (the gray squares).", width/2,firstLine+ 3* i);
+  text("If you have successfully made a path from one blue square to another square, then the area without a monster will fill.", width/2,firstLine+ 4*i);
+  text("If there are monsters on both sides of the path, then only the path will turn into blue squares.", width/2,firstLine+ 5 *i);
+  text("However, if a monster hits your path before you make it to another blue square, then you will loose a life.", width/2,firstLine+ 6*i);
+  text("The goal of the game is to fill up AT LEAST 80% of the field with blue squares.", width/2,firstLine+ 7* i);
+  text("Once you have reached 80%, you will automatically advanced to the next level.", width/2,firstLine+ 8*i);
+  text("good Luck! May the odds be ever in your favor!", width/2,firstLine+ 9*i);
+}
