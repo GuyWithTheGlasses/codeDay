@@ -4,6 +4,7 @@ import java.io.*;
 PImage bg; //background image
 Image player; //player image
 Monster orange, pink; //monster AI
+Monster o2, p2; //follow the monsters to clean up their trails
 int sidelen = 20; //length of one unit
 int[][] squares; //array of units, each unit is sidelen*sidelen pixels
 boolean[] keys = new boolean[4]; //keys being pressed
@@ -25,16 +26,21 @@ void setup() {
   size(1280, 720);
   bg = loadImage("crew.jpg"); 
   //background (bg);
+  //background (75);
+  fill(75);
+  for(int i = 0 ; i < width ; i += sidelen){
+    for(int j = 0 ; j < height ; j += sidelen){
+      rect(i, j, sidelen, sidelen);
+    }
+  }
 
   orange = new Monster((rnd.nextInt(61)+1)*20, (rnd.nextInt(34)+1)*20, loadImage("orange_ghost.png"));
   pink = new Monster((rnd.nextInt(61)+1)*20, (rnd.nextInt(34)+1)*20, loadImage("pink_ghost.png"));
 
-
-
   squares = new int[width / sidelen][height / sidelen]; //0 = empty place; 1 = safe place; 2 = temp path 
   fill (0, 0, 205);
   //Drawing the border, which will always be there
-/*
+
   //drawing top and bottom borders
   for (int a = 0; a < width; a = a+sidelen) {
     rect(a, 0, sidelen, sidelen);
@@ -49,7 +55,7 @@ void setup() {
     squares[0][v/sidelen] = 1;
     squares[(width - sidelen) / sidelen][v/sidelen] = 1;
   }
-*/
+
   player = new Image(0, 0, loadImage("clyde.jpg"));
   player.drawImage();
   dir = 0;
@@ -68,11 +74,11 @@ void setup() {
 
 void draw() {
   frameRate(30);
-  background (bg);
+  //background (bg);
   
-    fill (0, 0, 205);
+  fill (0, 0, 205);
   //Drawing the border, which will always be there
-
+/*
   //drawing top and bottom borders
   for (int a = 0; a < width; a = a+sidelen) {
     rect(a, 0, sidelen, sidelen);
@@ -87,6 +93,7 @@ void draw() {
     squares[0][v/sidelen] = 1;
     squares[(width - sidelen) / sidelen][v/sidelen] = 1;
   }
+  */
   Node tmp = updateSquares(); 
   //Set the square the player was just at to blue/green accordingly
 
@@ -147,10 +154,13 @@ void draw() {
 
   player.drawImage();
   //printsq();
-    orange.drawImage(squares);
+  fill(75);
+  //noStroke();
+  rect(orange.getX(), orange.getY(), sidelen, sidelen);
+  rect(pink.getX(), pink.getY(), sidelen, sidelen);
+  orange.drawImage(squares);
   pink.drawImage(squares);
-  delay(100);
-
+  delay(50);
 }
 
 /*----------------------------- Methods used in draw() ----------------------------------*/

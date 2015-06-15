@@ -16,6 +16,14 @@ class Monster {
     yspeed=20;
     startdir();
   }
+  
+  Monster(int xcor, int ycor){
+    x = xcor;
+    y = ycor;
+    i = null;
+    xspeed = 20;
+    yspeed = 20;
+  }
 
   void startdir() {
     startdir=rand.nextInt(4);
@@ -76,9 +84,9 @@ class Monster {
     h = i.height;
   }
   void drawImage(int [][] squares) {
-    image(i, x, y);
     autoMove(squares);
     collision(squares);
+    image(i, x, y);
   }
 
   void autoMove(int[][] squares ) {
