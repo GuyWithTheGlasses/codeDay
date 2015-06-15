@@ -34,8 +34,8 @@ void draw(){
     squares[0][v/sidelen] = 1;
     squares[(width - sidelen) / sidelen][v/sidelen] = 1;
   }
-  
-  for (int b = 0; b < width; b = b+sidelen) {
+  fill(0,205,0);
+  for (int b = 20; b < width-20; b = b+sidelen) {
     rect(b, 80, sidelen, sidelen);
     squares[b/sidelen][4] = 2;
     squares[0][4]=1;
